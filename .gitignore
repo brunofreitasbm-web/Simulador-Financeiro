@@ -1,0 +1,10 @@
+node_modules
+.next
+.data
+test-results
+
+.env.local
+.vercel
+
+.vercel
+.env*

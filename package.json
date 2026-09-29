@@ -1,0 +1,13 @@
+{
+  "name": "simulador-financeiro",
+  "private": true,
+  "packageManager": "pnpm@11.20.0",
+  "scripts": {
+    "test": "pnpm --filter @sf/engine test",
+    "typecheck": "pnpm -r typecheck",
+    "dev": "pnpm --filter web dev"
+  },
+  "devDependencies": {
+    "next": "^15.5.26"
+  }
+}

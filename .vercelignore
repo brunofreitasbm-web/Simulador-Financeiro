@@ -1,0 +1,6 @@
+node_modules
+.next
+.env.local
+apps/web/e2e
+apps/web/test-results
+PRD_Simulador_Financeiro.md

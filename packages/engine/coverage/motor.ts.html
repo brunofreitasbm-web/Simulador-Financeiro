@@ -1,0 +1,1066 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for motor.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="prettify.css" />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="index.html">All files</a> motor.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>255/255</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">92.95% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>66/71</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>8/8</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>255/255</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a>
+<a name='L302'></a><a href='#L302'>302</a>
+<a name='L303'></a><a href='#L303'>303</a>
+<a name='L304'></a><a href='#L304'>304</a>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">544124x</span>
+<span class="cline-any cline-yes">544124x</span>
+<span class="cline-any cline-yes">132160x</span>
+<span class="cline-any cline-yes">132160x</span>
+<span class="cline-any cline-yes">41362x</span>
+<span class="cline-any cline-yes">132160x</span>
+<span class="cline-any cline-yes">544124x</span>
+<span class="cline-any cline-yes">544124x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-yes">19433x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">815100x</span>
+<span class="cline-any cline-yes">669405x</span>
+<span class="cline-any cline-yes">669405x</span>
+<span class="cline-any cline-yes">669405x</span>
+<span class="cline-any cline-yes">815100x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">524691x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">1016226x</span>
+<span class="cline-any cline-yes">524691x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-yes">272062x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19434x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">226608x</span>
+<span class="cline-any cline-yes">226608x</span>
+<span class="cline-any cline-yes">226608x</span>
+<span class="cline-any cline-yes">226608x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">6588x</span>
+<span class="cline-any cline-yes">6588x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">457896x</span>
+<span class="cline-any cline-yes">457896x</span>
+<span class="cline-any cline-yes">457896x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-yes">233196x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { aplicarCenario, calibrar } from './calibrar'
+import { cpLp, cronograma } from './dividas'
+import {
+  AlavancasSchema, CONFIG_PADRAO,
+  type AlavancasBruta, type Config, type EntradaBruta, type EntradaSimulacao,
+} from './schema'
+import {
+  AUX_KEYS, BP_KEYS, DFC_KEYS, DRE_KEYS,
+  type Aux, type BP, type DFC, type DRE, type LinhaDivida, type Mes,
+} from './types'
+import { agendar, agendarLinear, competencia, taxaMensal, zeros } from './util'
+import { validar } from './validar'
+import type { AlertaResultado } from './types'
+&nbsp;
+export class EntradaInvalidaError extends Error {
+  constructor(public erros: string[]) {
+    super(`Entrada inválida:\n- ${erros.join('\n- ')}`)
+    this.name = 'EntradaInvalidaError'
+  }
+}
+&nbsp;
+export interface Simulacao {
+  entrada: EntradaSimulacao
+  cfg: Config
+  meses: Mes[]
+  alertasEntrada: AlertaResultado[]
+}
+&nbsp;
+interface Depreciavel { mensal: number; restante: number; inicio: number }
+&nbsp;
+/**
+ * Núcleo: projeta H meses. Ordem de cálculo da Seção 6.2; regra anticiclo (6.1): juros,
+ * receita financeira e cheque especial usam sempre saldos de t−1.
+ */
+export function simular(entradaBruta: EntradaBruta, alavancasBruta: AlavancasBruta = {}, cfgParcial: Partial&lt;Config&gt; = {}): Simulacao {
+  const cfg: Config = { ...CONFIG_PADRAO, ...cfgParcial }
+  if (cfg.modoIR !== 'informado') <span class="branch-0 cbranch-no" title="branch not covered" >throw new Error("modoIR 'regime' ainda não implementado (v1)")</span>
+  if (!(cfg.horizonte &gt;= 1 &amp;&amp; cfg.horizonte &lt;= 60)) <span class="branch-0 cbranch-no" title="branch not covered" >throw new Error('horizonte deve estar entre 1 e 60')</span>
+  const v = validar(entradaBruta)
+  if (!v.ok) throw new EntradaInvalidaError(v.erros)
+  const e = v.entrada
+  const alav = AlavancasSchema.parse(alavancasBruta)
+  const H = cfg.horizonte
+  const dm = cfg.diasAno / 12
+  const h = e.historico, ab = e.abertura, pj = e.projecao
+&nbsp;
+  // 2–3. calibração + cenário
+  const cal = calibrar(e, cfg)
+  const drv = aplicarCenario(e, cal, alav)
+&nbsp;
+  // taxas
+  const iApl = taxaMensal(ab.taxaAplicacao, ab.unidadeTaxaAplicacao)
+  const iChq = taxaMensal(ab.taxaChequeEspecial, ab.unidadeTaxaChequeEspecial) * drv.fJuros
+  const iInfl = Math.pow(1 + pj.inflacaoCustos / 100, 1 / 12) - 1
+  const g = pj.crescimentoReceita / 100
+&nbsp;
+  // dívidas
+  const crons = ab.dividas.map((d, i) =&gt; cronograma(d, i, H + 14, drv.fJuros))
+&nbsp;
+  // contingências
+  const passivosProv = ab.contingencias.filter((c) =&gt; c.polo === 'passivo' &amp;&amp; c.probabilidade === 'provavel')
+  const provEm = (t: number) =&gt; {
+    let cp = 0, lp = 0
+    for (const c of passivosProv) {
+      if (c.mesDesfecho !== undefined &amp;&amp; c.mesDesfecho &lt;= t) continue
+      if (c.mesDesfecho !== undefined &amp;&amp; c.mesDesfecho &lt;= t + 12) cp += c.valor
+      else lp += c.valor
+    }
+    return { cp, lp }
+  }
+&nbsp;
+  // filas de defasagem (índice = mês de liquidação)
+  const N = H + 80
+  const filaPrazo = new Array&lt;number&gt;(N).fill(0)
+  const filaCartao = new Array&lt;number&gt;(N).fill(0)
+  const filaCr0 = new Array&lt;number&gt;(N).fill(0)
+  const filaForn = new Array&lt;number&gt;(N).fill(0)
+  agendarLinear(filaCr0, cal.cr0, Math.ceil(h.prazoRecebDias / dm))
+  const forn0 = (h.compras12 / cfg.diasAno) * cal.pmpc0
+  agendarLinear(filaForn, forn0, Math.ceil(cal.pmpc0 / dm))
+&nbsp;
+  // depreciação
+  const depImob: Depreciavel = { mensal: ab.vidaUtilMeses ? ab.imobilizado0 / ab.vidaUtilMeses : 0, restante: ab.imobilizado0, inicio: 1 }
+  const edif = (ab.imoveis0 * ab.pctEdificacao) / 100
+  const depImovel: Depreciavel = { mensal: edif / 300, restante: edif, inicio: 1 }
+  const depInt: Depreciavel = {
+    mensal: ab.vidaUtilIntangivelMeses &gt; 0 ? ab.intangivel0 / ab.vidaUtilIntangivelMeses : 0,
+    restante: ab.intangivel0, inicio: 1,
+  }
+  const depCapex: Depreciavel[] = pj.eventos
+    .filter((ev) =&gt; ev.tipo === 'capex')
+    .map((ev) =&gt; ({ mensal: ev.valor / ev.vidaUtilMeses, restante: ev.valor, inicio: ev.mes + 1 }))
+  const depreciar = (d: Depreciavel, t: number) =&gt; {
+    if (t &lt; d.inicio || d.restante &lt;= 0) return 0
+    const x = Math.min(d.mensal, d.restante)
+    d.restante -= x
+    return x
+  }
+&nbsp;
+  // ---- t = 0 : balanço de abertura ----
+  const baseMes = Number(e.dataBase.slice(5, 7))
+  const desc12 = h.rb12 * cal.pctVista * cal.descVista
+  const comissaoEst12 = (h.rb12 - desc12) * (h.pctComissao / 100)
+  const cap0 = (h.impVendas12 + comissaoEst12 + h.folha12 + h.temporarios12 + h.proLabore12 + h.irCsll12) / 12
+&nbsp;
+  const linhasDivida = (t: number): LinhaDivida[] =&gt;
+    crons.map((c) =&gt; {
+      const { cp, lp } = cpLp(c, t)
+      return {
+        id: c.id, tipo: c.tipo, descricao: c.descricao,
+        saldoInicial: t === 0 ? c.saldo[0] : c.saldo[t - 1],
+        captacao: t === 0 ? 0 : c.captacao[t],
+        juros: t === 0 ? 0 : c.juros[t],
+        jurosCapitalizados: t === 0 ? 0 : c.jurosCap[t],
+        amortizacao: t === 0 ? 0 : c.amort[t],
+        saldoFinal: c.saldo[t], cp, lp,
+      }
+    })
+&nbsp;
+  const montarBP = (p: {
+    caixa: number; aplic: number; cr: number; pdd: number; est: number; imob: number; intang: number
+    forn: number; cap: number; capital: number; la: number; t: number
+  }): BP =&gt; {
+    const ld = linhasDivida(p.t)
+    const soma = (tipo: 'bancaria' | 'tributaria', k: 'cp' | 'lp') =&gt; ld.filter((d) =&gt; d.tipo === tipo).reduce((s, d) =&gt; s + d[k], 0)
+    const pv = provEm(p.t)
+    const bp = zeros(BP_KEYS)
+    bp.caixa = p.caixa; bp.aplicacoes = p.aplic; bp.contasReceber = p.cr; bp.pdd = p.pdd; bp.estoque = p.est
+    bp.ac = p.caixa + p.aplic + p.cr - p.pdd + p.est
+    bp.imobilizado = p.imob; bp.intangivel = p.intang
+    bp.anc = p.imob + p.intang
+    bp.ativo = bp.ac + bp.anc
+    bp.fornecedores = p.forn; bp.contasAPagar = p.cap
+    bp.emprestimosCP = soma('bancaria', 'cp'); bp.parcelamentosCP = soma('tributaria', 'cp'); bp.provisoesCP = pv.cp
+    bp.pc = p.forn + p.cap + bp.emprestimosCP + bp.parcelamentosCP + bp.provisoesCP
+    bp.emprestimosLP = soma('bancaria', 'lp'); bp.parcelamentosLP = soma('tributaria', 'lp'); bp.provisoesLP = pv.lp
+    bp.pnc = bp.emprestimosLP + bp.parcelamentosLP + bp.provisoesLP
+    bp.capitalSocial = p.capital; bp.lucrosAcumulados = p.la
+    bp.pl = p.capital + p.la
+    bp.passivoPL = bp.pc + bp.pnc + bp.pl
+    return bp
+  }
+&nbsp;
+  const bpSemPlug = montarBP({
+    caixa: ab.caixa0, aplic: ab.aplicacoes0, cr: cal.cr0, pdd: 0, est: ab.estoque0,
+    imob: ab.imobilizado0 + ab.imoveis0, intang: ab.intangivel0,
+    forn: forn0, cap: cap0, capital: ab.capitalSocial, la: 0, t: 0,
+  })
+  const plug0 = bpSemPlug.ativo - bpSemPlug.pc - bpSemPlug.pnc - ab.capitalSocial
+  const bp0 = montarBP({
+    caixa: ab.caixa0, aplic: ab.aplicacoes0, cr: cal.cr0, pdd: 0, est: ab.estoque0,
+    imob: ab.imobilizado0 + ab.imoveis0, intang: ab.intangivel0,
+    forn: forn0, cap: cap0, capital: ab.capitalSocial, la: plug0, t: 0,
+  })
+  const aux0 = zeros(AUX_KEYS); aux0.estoqueFinal = ab.estoque0; aux0.caixaDireto = ab.caixa0
+  const meses: Mes[] = [{
+    t: 0, competencia: competencia(e.dataBase, 0),
+    dre: zeros(DRE_KEYS), bp: bp0, dfc: zeros(DFC_KEYS), aux: aux0, dividas: linhasDivida(0),
+  }]
+&nbsp;
+  // estado corrente
+  let caixa = ab.caixa0, aplic = ab.aplicacoes0, cr = cal.cr0, pdd = 0, est = ab.estoque0
+  let imob = ab.imobilizado0 + ab.imoveis0, intang = ab.intangivel0
+  let forn = forn0, cap = cap0, capital = ab.capitalSocial, la = plug0
+  let caixaDireto = ab.caixa0
+  let provPrev = provEm(0).cp + provEm(0).lp
+&nbsp;
+  // ---- t = 1..H ----
+  for (let t = 1; t &lt;= H; t++) {
+    const k = (baseMes + t - 1) % 12
+    const dre = zeros(DRE_KEYS)
+    const dfc = zeros(DFC_KEYS)
+    const aux = zeros(AUX_KEYS)
+&nbsp;
+    // a. receita, descontos, impostos
+    const rb = (h.rb12 / 12) * Math.pow(1 + g, t) * pj.sazonalidade[k] * drv.fRec
+    const vista = rb * cal.pctVista, prazo = rb * cal.pctPrazo, cartao = rb * cal.pctCartao
+    const desc = vista * drv.descVista
+    const ov = pj.<span class="branch-0 cbranch-no" title="branch not covered" >aliquotaVendasPorMes?.[t - 1]</span>
+    const aliq = ov !== <span class="branch-0 cbranch-no" title="branch not covered" >undefined &amp;&amp; ov !== <span class="branch-0 cbranch-no" title="branch not covered" >null ? o</span>v / 100 : d</span>rv.aliqVendas
+    const imp = (rb - desc) * aliq
+&nbsp;
+    // b. CMV, estoque, compras
+    const cmv = rb * drv.cmvPct
+    let estFin = est, compras = 0
+    if (cal.pmre0 !== null) {
+      const alvo = (cmv * cal.pmre0) / dm
+      compras = cmv + alvo - est
+      estFin = alvo
+      if (compras &lt; 0) { estFin = Math.max(0, est - cmv); compras = cmv + estFin - est }
+    } else {
+      compras = cmv
+    }
+    agendar(filaForn, t, compras, drv.prazoPagDias, dm)
+&nbsp;
+    // c. despesas variáveis
+    const comissao = (rb - desc) * drv.comissao
+    const mdr = cartao * drv.taxaCartao
+    const frete = rb * drv.fretePct
+    const prazoCred = prazo * (1 - drv.pctAnt)
+    const perdas = prazoCred * drv.inad
+&nbsp;
+    // d. gastos fixos
+    let pessoal = cal.pessoalBase_m
+    for (const ev of pj.eventos) if (ev.tipo === 'contratacao' &amp;&amp; ev.mes &lt;= t) pessoal += ev.custoMensalComEncargos
+    for (const ev of pj.eventos) if (ev.tipo === 'reajusteFolha' &amp;&amp; ev.mes &lt;= t) pessoal *= 1 + ev.pct / 100
+    pessoal *= drv.fFixos
+    const fatInfl = Math.pow(1 + iInfl, t)
+    const gastosFixos = cal.fixosBase_m * fatInfl * drv.fFixos
+    const marketing = pj.marketingModo === 'valor' ? cal.marketingBase_m * fatInfl * drv.fFixos : rb * cal.marketingPctRB * drv.fFixos
+    const dasMei = cal.dasMei_m
+&nbsp;
+    // e. depreciação
+    let depMat = depreciar(depImob, t) + depreciar(depImovel, t)
+    for (const d of depCapex) depMat += depreciar(d, t)
+    const depIntang = depreciar(depInt, t)
+    const dep = depMat + depIntang
+    let capex = 0, aporte = 0
+    for (const ev of pj.eventos) {
+      if (ev.tipo === 'capex' &amp;&amp; ev.mes === t) capex += ev.valor
+      if (ev.tipo === 'aporte' &amp;&amp; ev.mes === t) aporte += ev.valor
+    }
+&nbsp;
+    // f. dívidas (saldo t−1)
+    const ld = linhasDivida(t)
+    const jurosDiv = ld.reduce((s, d) =&gt; s + d.juros, 0)
+    const jurosCap = ld.reduce((s, d) =&gt; s + d.jurosCapitalizados, 0)
+    const amortDiv = ld.reduce((s, d) =&gt; s + d.amortizacao, 0)
+    const captDiv = ld.reduce((s, d) =&gt; s + d.captacao, 0)
+&nbsp;
+    // g. financeiro (saldos t−1)
+    const recFin = aplic * iApl
+    const cheque = Math.max(0, -caixa) * iChq
+&nbsp;
+    // h. custo de antecipação
+    const custoAnt =
+      prazo * drv.pctAnt * drv.taxaAnt_m * (drv.prazoRecebDias / dm) +
+      cartao * drv.pctAnt * drv.taxaAnt_m * (drv.prazoCartaoDias / dm)
+&nbsp;
+    // i. resultado
+    const rl = rb - desc - imp
+    const mc = rl - cmv - comissao - mdr - frete - perdas
+    const ebitda = mc - pessoal - gastosFixos - marketing - dasMei
+    const ebit = ebitda - dep
+    const despFin = jurosDiv + cheque + custoAnt
+    const lair = ebit - despFin + recFin
+    const ir = cal.irCsll_m
+    const ll = lair - ir
+    const distrib = cal.distrib_m * drv.fDistrib
+    Object.assign(dre, {
+      rb, descontos: desc, impostos: imp, rl, cmv, comissoes: comissao, taxaCartao: mdr, frete, perdas, mc,
+      pessoal, gastosFixos, marketing, dasMei, ebitda, depreciacao: dep, ebit,
+      despFinDividas: jurosDiv, despFinCheque: cheque, despFinAntecipacao: custoAnt, despFinanceiras: despFin,
+      recFinanceiras: recFin, lair, irCsll: ir, ll, distribuicao: distrib, resultadoApos: ll - distrib,
+    } satisfies DRE)
+&nbsp;
+    // j. recebimentos e pagamentos
+    const prazoCredAdd = prazoCred
+    const cartaoCredAdd = cartao * (1 - drv.pctAnt) * (1 - drv.taxaCartao)
+    agendar(filaPrazo, t, prazoCredAdd, drv.prazoRecebDias, dm)
+    agendar(filaCartao, t, cartaoCredAdd, drv.prazoCartaoDias, dm)
+    const baixaCR = filaPrazo[t] + filaCartao[t] + filaCr0[t]
+    const pddBaixa = filaPrazo[t] * drv.inad
+    const recebPrazo = filaPrazo[t] * (1 - drv.inad)
+    const recebimentos =
+      vista - desc +
+      prazo * drv.pctAnt + cartao * drv.pctAnt * (1 - drv.taxaCartao) +
+      recebPrazo + filaCartao[t] + filaCr0[t]
+    const pagFornec = filaForn[t]
+    const capNovo = imp + comissao + pessoal + ir
+    const contPag = passivosProv.filter((c) =&gt; c.mesDesfecho === t).reduce((s, c) =&gt; s + c.valor, 0)
+    const jurosPagos = jurosDiv - jurosCap
+    const saidas =
+      pagFornec + cap /* contas a pagar de t−1 */ + frete + gastosFixos + marketing + dasMei +
+      cheque + custoAnt + jurosPagos + amortDiv + capex + distrib + contPag
+    caixaDireto += recebimentos - saidas + captDiv + aporte
+&nbsp;
+    const crNovo = cr + prazoCredAdd + cartaoCredAdd - baixaCR
+    const pddNovo = pdd + perdas - pddBaixa
+    const fornNovo = forn + compras - pagFornec
+    const provNow = provEm(t)
+    const provNovo = provNow.cp + provNow.lp
+    const aplicNovo = aplic + recFin
+    const imobNovo = imob + capex - depMat
+    const intangNovo = intang - depIntang
+&nbsp;
+    // k. DFC (método indireto; sinais = efeito no caixa)
+    dfc.ll = ll
+    dfc.depreciacao = dep
+    dfc.varPdd = pddNovo - pdd
+    dfc.jurosCapitalizados = jurosCap
+    dfc.varContasReceber = -(crNovo - cr)
+    dfc.varEstoque = -(estFin - est)
+    dfc.varFornecedores = fornNovo - forn
+    dfc.varContasAPagar = capNovo - cap
+    dfc.varProvisoes = provNovo - provPrev
+    dfc.fco = dfc.ll + dfc.depreciacao + dfc.varPdd + dfc.jurosCapitalizados + dfc.varContasReceber +
+      dfc.varEstoque + dfc.varFornecedores + dfc.varContasAPagar + dfc.varProvisoes
+    dfc.capex = -capex
+    dfc.varAplicacoes = -(aplicNovo - aplic)
+    dfc.fci = dfc.capex + dfc.varAplicacoes
+    dfc.captacoes = captDiv
+    dfc.amortizacoes = -amortDiv
+    dfc.aportes = aporte
+    dfc.distribuicao = -distrib
+    dfc.fcf = dfc.captacoes + dfc.amortizacoes + dfc.aportes + dfc.distribuicao
+    dfc.deltaCaixa = dfc.fco + dfc.fci + dfc.fcf
+&nbsp;
+    // l. BP
+    imob = imobNovo; intang = intangNovo
+    caixa += dfc.deltaCaixa
+    aplic = aplicNovo; cr = crNovo; pdd = pddNovo; est = estFin; forn = fornNovo; cap = capNovo
+    capital += aporte
+    la = la + ll - distrib
+    provPrev = provNovo
+    const bp = montarBP({ caixa, aplic, cr, pdd, est, imob, intang, forn, cap, capital, la, t })
+&nbsp;
+    aux.compras = compras
+    aux.estoqueFinal = estFin
+    aux.gastosFixosTotal = pessoal + gastosFixos + marketing + dasMei
+    aux.jurosDividasPagos = jurosPagos
+    aux.caixaDireto = caixaDireto
+    meses.push({ t, competencia: competencia(e.dataBase, t), dre, bp, dfc, aux, dividas: ld })
+  }
+&nbsp;
+  return { entrada: e, cfg, meses, alertasEntrada: v.alertas }
+}
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-09-29T15:29:48.112Z
+            </div>
+        <script src="prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="sorter.js"></script>
+        <script src="block-navigation.js"></script>
+    </body>
+</html>
+    
