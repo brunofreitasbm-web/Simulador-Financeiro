@@ -621,7 +621,7 @@ Princípios: (1) persistir **só inputs e versões**; resultado vivo é recalcul
 | Auth | MVP local: nenhuma (bind em `127.0.0.1`). Nuvem: **Supabase Auth** ou Auth.js (magic link) | Single-user | — |
 | PDF | MVP: página `/relatorio` com CSS de impressão (`window.print`). v1: **@react-pdf/renderer** no servidor | Sem Chromium no serverless | Puppeteer na Vercel (pesado) |
 | Testes | **Vitest** \+ **fast-check** (property-based) \+ **Playwright** (E2E) |  | Jest |
-| IA conclusão | API Anthropic (Claude), server-side, chave em env |  | — |
+| IA conclusão | Google Gemini via Supabase Edge Function `gerar-conclusao` (chave no secret `GEMINI_API_KEY` do Supabase, nunca no app) |  | — |
 | Lint/format | ESLint \+ Prettier ; `tsc --noEmit` em CI |  |  |
 | CI | GitHub Actions: lint → typecheck → test engine (cobertura ≥ 95% linhas no engine) → E2E |  |  |
 

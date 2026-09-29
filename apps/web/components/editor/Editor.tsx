@@ -13,6 +13,7 @@ import { Tabela } from '../Tabela'
 import { Badge, Button, Card, Select, TextInput } from '../ui'
 import { Alertas } from '../Alertas'
 import { Cenarios } from './Cenarios'
+import { ConclusaoIA } from './ConclusaoIA'
 import { CampoContext, type EstadoSalvo } from './CampoContext'
 import { Premissas, type SetFn } from './Premissas'
 
@@ -25,6 +26,7 @@ const ABAS = [
   { id: 'indicadores', rotulo: 'Indicadores' },
   { id: 'dividas', rotulo: 'Dívidas' },
   { id: 'comparar', rotulo: 'Comparar' },
+  { id: 'conclusao', rotulo: 'Conclusão IA' },
 ] as const
 type AbaId = (typeof ABAS)[number]['id']
 
@@ -83,6 +85,7 @@ export function Editor({ id, empresaId, inicial }: { id: string; empresaId: stri
   }, [salvar])
 
   const salvarAgora = useCallback(() => { if (sujo.current) void salvar() }, [salvar])
+  const salvarEAguardar = useCallback(async () => { if (sujo.current) await salvar() }, [salvar])
   const totalMeses = r.horizonte
   const nCol = (res: Resultado) => colunasMeses(res).slice(0, totalMeses)
 
@@ -180,6 +183,7 @@ export function Editor({ id, empresaId, inicial }: { id: string; empresaId: stri
           ? <p className="text-sm text-ink-soft">Nenhuma dívida cadastrada.</p>
           : <Tabela colunas={['Abertura', ...nCol(cen.resultado)]} linhas={linhasDividas(cen.resultado)} />
       )}
+      {aba === 'conclusao' && <ConclusaoIA id={id} cenarios={r.cenarios.map((c) => c.nome)} antes={salvarEAguardar} />}
       {aba === 'comparar' && sims.every((s) => s.ok) && (
         <Comparar cenarios={sims.map((s, i) => ({ nome: r.cenarios[i].nome, r: (s as { ok: true; resultado: Resultado }).resultado }))} />
       )}
