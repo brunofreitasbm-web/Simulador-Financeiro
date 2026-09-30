@@ -40,7 +40,28 @@ export function EmpresaForm({ inicial, onCancel }: { inicial?: EmpresaDados; onC
   })
   const [erro, setErro] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
+  const [buscando, setBuscando] = useState(false)
+  const [aviso, setAviso] = useState<string | null>(null)
   const set = <K extends keyof EmpresaDados>(k: K, v: EmpresaDados[K]) => setD((x) => ({ ...x, [k]: v }))
+
+  /** Preenche o cadastro com os dados da Receita (BrasilAPI). Não mexe em responsável, consentimento nem site. */
+  async function buscarCnpj() {
+    setErro(null); setAviso(null)
+    if (!cnpjValido(d.cnpj)) return setErro('Informe um CNPJ válido para buscar.')
+    setBuscando(true)
+    try {
+      const res = await fetch(`/api/cnpj/${d.cnpj.replace(/\D/g, '')}`)
+      const j = await res.json().catch(() => ({}))
+      if (!res.ok) return setErro(j.erro ?? `Falha (${res.status})`)
+      setD((x) => ({
+        ...x,
+        razaoSocial: j.razaoSocial || x.razaoSocial, nomeFantasia: j.nomeFantasia ?? x.nomeFantasia, uf: j.uf ?? x.uf, cidade: j.cidade ?? x.cidade,
+        anoInicio: j.anoInicio ? String(j.anoInicio) : x.anoInicio, porte: j.porte ?? x.porte, regime: j.regime ?? x.regime, segmento: j.segmento ?? x.segmento,
+        telefone: x.telefone || j.telefone || '', emailContato: x.emailContato || j.email || '', descricaoAtividade: x.descricaoAtividade || j.descricaoAtividade || '',
+      }))
+      setAviso(`Dados da Receita carregados${j.situacao && j.situacao !== 'ativa' ? ` — atenção: situação cadastral ${j.situacao}` : ''}.${j.regime ? '' : ' Regime não consta na consulta pública (não é Simples/MEI): confira.'}`)
+    } finally { setBuscando(false) }
+  }
 
   async function salvar() {
     setErro(null)
@@ -70,7 +91,12 @@ export function EmpresaForm({ inicial, onCancel }: { inicial?: EmpresaDados; onC
     <Card className="p-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <Field label="Razão social *" wide><TextInput className="w-full" value={d.razaoSocial} onChange={(v) => set('razaoSocial', v)} /></Field>
-        <Field label="CNPJ"><TextInput className="w-full" value={d.cnpj} onChange={(v) => set('cnpj', v)} placeholder="00.000.000/0000-00" /></Field>
+        <Field label="CNPJ" help="Digite e clique em Buscar: preenche razão social, local, porte, início e atividade pela Receita.">
+          <div className="flex gap-2">
+            <TextInput className="w-full" value={d.cnpj} onChange={(v) => set('cnpj', v)} placeholder="00.000.000/0000-00" />
+            <Button variant="ghost" onClick={buscarCnpj} disabled={buscando || d.cnpj.replace(/\D/g, '').length !== 14}>{buscando ? 'Buscando…' : 'Buscar'}</Button>
+          </div>
+        </Field>
         <Field label="Segmento">
           <Select className="w-full" value={d.segmento} onChange={(v) => set('segmento', v)} options={SEGMENTOS.map((s) => ({ value: s, label: s }))} />
         </Field>
@@ -104,6 +130,7 @@ export function EmpresaForm({ inicial, onCancel }: { inicial?: EmpresaDados; onC
           <span><b>Autorização para análise (LGPD).</b> A empresa autorizou o uso dos seus dados financeiros para esta análise e a emissão do relatório.</span>
         </label>
       </div>
+      {aviso && <p className="mt-3 text-sm text-ok">{aviso}</p>}
       {erro && <p className="mt-3 text-sm text-bad">{erro}</p>}
       <div className="mt-4 flex gap-2">
         <Button onClick={salvar} disabled={salvando || d.razaoSocial.trim().length < 2}>{d.id ? 'Salvar alterações' : 'Criar empresa'}</Button>

@@ -17,6 +17,8 @@ const REGIME: Record<string, string> = { simples: 'Simples Nacional', presumido:
 export function ListaEmpresas({ empresas }: { empresas: EmpresaLinha[] }) {
   const router = useRouter()
   const [busca, setBusca] = useState('')
+  const [importando, setImportando] = useState(false)
+  const [msgImport, setMsgImport] = useState<string | null>(null)
   const [criando, setCriando] = useState(empresas.length === 0)
   const filtradas = empresas.filter((e) => `${e.razaoSocial} ${e.cnpj ?? ''}`.toLowerCase().includes(busca.toLowerCase()))
 
@@ -26,15 +28,28 @@ export function ListaEmpresas({ empresas }: { empresas: EmpresaLinha[] }) {
     router.refresh()
   }
 
+  async function importar() {
+    setImportando(true); setMsgImport(null)
+    try {
+      const res = await fetch('/api/empresas/importar', { method: 'POST' })
+      const j = await res.json().catch(() => ({}))
+      if (!res.ok) setMsgImport(j.erro ?? `Falha (${res.status})`)
+      else setMsgImport(`${j.criadas ? `${j.criadas} empresa(s) criada(s) a partir dos sistemas.` : 'Todas as unidades do PDV já estão cadastradas.'}${j.avisos?.length ? ` ${j.avisos.join(' ')}` : ''}`)
+      router.refresh()
+    } catch (e) { setMsgImport(e instanceof Error ? e.message : 'erro de rede') } finally { setImportando(false) }
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl font-semibold">Início · Empresas</h1>
         <div className="flex gap-2">
           <TextInput value={busca} onChange={setBusca} placeholder="Buscar por nome ou CNPJ" className="w-64" />
+          <Button variant="ghost" onClick={importar} disabled={importando}>{importando ? 'Importando…' : 'Importar dos sistemas'}</Button>
           <Button onClick={() => setCriando((v) => !v)}>{criando ? 'Fechar' : 'Nova empresa'}</Button>
         </div>
       </div>
+      {msgImport && <p className="text-sm text-ink-soft" role="status">{msgImport}</p>}
       {criando && <EmpresaForm onCancel={empresas.length ? () => setCriando(false) : undefined} />}
       {empresas.length === 0 && !criando ? null : filtradas.length === 0 ? (
         <p className="text-sm text-ink-soft">Nenhuma empresa encontrada.</p>

@@ -67,6 +67,12 @@ export async function listarEmpresas(sb: Cliente) {
   return (rows as Row[]).map((e) => ({ ...mapEmpresa(e), nSimulacoes: Number(e.sim_simulacao?.[0]?.count ?? 0) }))
 }
 
+/** Cria empresa + fonte PDV para cada unidade do PDV ainda não alimentada (RPC sim_importar_unidades_pdv). */
+export async function importarUnidadesPdv(sb: Cliente): Promise<{ empresaId: string; cnpj: string | null; unidade: string }[]> {
+  const rows = ok(await sb.rpc('sim_importar_unidades_pdv')) as Row[]
+  return rows.map((r) => ({ empresaId: r.empresa_id, cnpj: r.cnpj, unidade: r.unidade }))
+}
+
 export async function obterEmpresa(sb: Cliente, id: string) {
   const e = ok(await sb.from('sim_empresa').select('*').eq('id', id).maybeSingle())
   return e ? mapEmpresa(e as Row) : null
