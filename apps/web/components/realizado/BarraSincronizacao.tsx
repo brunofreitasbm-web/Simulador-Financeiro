@@ -34,16 +34,23 @@ export function BarraSincronizacao({ empresaId, sincronizacoes, temFontes }: { e
   return (
     <Card className="p-3">
       <div className="flex flex-wrap items-center gap-3">
-        <label className="flex items-center gap-2 text-sm">
-          <span className="text-ink-soft">Mês</span>
-          <input type="month" value={competencia} onChange={(e) => setCompetencia(e.target.value)} max={competenciaAtual()} className="rounded-md border border-line bg-white px-2 py-1.5 text-sm" />
-        </label>
-        <label className="flex items-center gap-2 text-sm" title="Substitui também as células digitadas à mão e os meses fechados">
-          <input type="checkbox" checked={sobrescrever} onChange={(e) => setSobrescrever(e.target.checked)} /> sobrescrever manuais
-        </label>
-        <Button onClick={sincronizar} disabled={ocupado || !temFontes || !/^\d{4}-\d{2}$/.test(competencia)}>{ocupado ? 'Sincronizando…' : 'Sincronizar agora'}</Button>
+        <Button onClick={sincronizar} disabled={ocupado || !temFontes || !/^\d{4}-\d{2}$/.test(competencia)}>
+          {ocupado ? 'Sincronizando…' : `Atualizar ${rotuloCompetencia(competencia)}`}
+        </Button>
         {!temFontes && <span className="text-sm text-warn">Cadastre uma fonte de dados abaixo para sincronizar.</span>}
         {msg && <Badge tone={msg.tom}>{msg.texto}</Badge>}
+        <details className="text-sm">
+          <summary className="cursor-pointer text-ink-soft hover:text-ink">outro mês / opções</summary>
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-2">
+              <span className="text-ink-soft">Mês</span>
+              <input type="month" value={competencia} onChange={(e) => setCompetencia(e.target.value)} max={competenciaAtual()} className="rounded-md border border-line bg-white px-2 py-1.5 text-sm" />
+            </label>
+            <label className="flex items-center gap-2" title="Substitui também as células digitadas à mão e os meses fechados">
+              <input type="checkbox" checked={sobrescrever} onChange={(e) => setSobrescrever(e.target.checked)} /> sobrescrever manuais
+            </label>
+          </div>
+        </details>
         <button className="ml-auto text-sm text-ink-soft underline-offset-2 hover:underline" onClick={() => setAberto((x) => !x)}>
           {aberto ? 'ocultar histórico' : `histórico (${sincronizacoes.length})`}
         </button>
