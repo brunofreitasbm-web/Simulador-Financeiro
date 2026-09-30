@@ -80,6 +80,6 @@ Sem os secrets do projeto B, PDV funciona; Clínica e RH registram erro legível
 
 - Clínica e RH: tabelas financeiras ainda vazias; tudo aparece `sem_dados` até os sistemas lançarem.
 - Grão-Pará: um pedido de R$ 5 em agosto.
-- PDV Playground em setembro: receita R$ 62.411,68. Circuito: R$ 15.052,10.
+- PDV Playground em setembro: receita R$ 35.265,58 (total cobrado; os itens somavam R$ 62.411,68 porque pedidos de sessão valorizam o tempo a preço de lista/crédito, então a receita usa `fa_kiosk_orders.total_cents`, igual aos pagamentos). Circuito: R$ 15.052,10.
 - Os pagamentos do PDV ficam abaixo da receita quando há sessões pré-pagas; a alimentação avisa quando a cobertura é menor que 80%.
 - Nenhuma folha lançada no PDV nem documentos do contador no RH: `folha12` vira lacuna até isso existir.
