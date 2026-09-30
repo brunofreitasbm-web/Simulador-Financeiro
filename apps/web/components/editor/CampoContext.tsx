@@ -22,4 +22,4 @@ export const OBRIGATORIOS: string[][] = [
   ['abertura', 'caixa0'], ['abertura', 'capitalSocial'],
 ]
 
-export type StatusCampo = 'vazio' | 'opcional' | 'pendente' | 'salvo'
+export type StatusCampo = 'vazio' | 'opcional' | 'pendente' | 'salvo' | 'importado'

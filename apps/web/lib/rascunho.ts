@@ -1,4 +1,6 @@
-import { CENARIOS_PADRAO, type AlavancasBruta, type EntradaBruta } from '@sf/engine'
+import { CENARIOS_PADRAO, normalizarSazonalidade, type AlavancasBruta, type EntradaBruta, type Lacuna } from '@sf/engine'
+
+export { normalizarSazonalidade }
 
 export type Regime = 'simples' | 'presumido' | 'real' | 'mei'
 export type HistoricoForm = Partial<EntradaBruta['historico']>
@@ -19,6 +21,15 @@ export interface CenarioForm {
   alavancas: AlavancasBruta
 }
 
+/** O que veio do painel Realizado para esta simulação (persistido em sim_simulacao.config.alimentacao). */
+export interface AlimentacaoRegistro {
+  em: string
+  competencias: string[]
+  /** caminho do campo → valor alimentado; se o valor atual for igual, o editor mostra "importado" */
+  campos: Record<string, number>
+  lacunas: Lacuna[]
+}
+
 /** Rascunho completo de uma simulação — o que o editor edita e o autosave persiste. */
 export interface Rascunho {
   nome: string
@@ -29,6 +40,7 @@ export interface Rascunho {
   abertura: AberturaForm
   projecao: ProjecaoForm
   cenarios: CenarioForm[]
+  alimentacao?: AlimentacaoRegistro | null
 }
 
 export function paraEntrada(r: Rascunho): EntradaBruta {
@@ -86,7 +98,3 @@ export function preencherExemplo(r: Rascunho): Rascunho {
   }
 }
 
-export function normalizarSazonalidade(a: number[]): number[] {
-  const m = a.reduce((s, x) => s + x, 0) / a.length
-  return m > 0 ? a.map((x) => x / m) : Array(12).fill(1)
-}

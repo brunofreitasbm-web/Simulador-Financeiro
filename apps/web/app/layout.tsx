@@ -30,7 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               Simulador Financeiro
             </Link>
             <nav className="text-sm text-ink-soft">
-              <Link href="/empresas" className="hover:text-ink">Empresas</Link>
+              <Link href="/empresas" className="font-medium text-ink hover:text-brand-dark">Início</Link>
             </nav>
             {email && (
               <form action={sair} className="ml-auto flex items-center gap-3 text-sm text-ink-soft">

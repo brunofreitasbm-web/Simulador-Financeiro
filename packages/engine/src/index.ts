@@ -7,3 +7,7 @@ export { REGISTRY } from './registry'
 export { formatarBRL, formatarPct, formatarDias } from './formato'
 export { cronograma, cpLp } from './dividas'
 export { taxaMensal } from './util'
+export {
+  CAMPOS_REALIZADO, COLUNA_REALIZADO, competenciasAte, mesclarPremissas, montarPremissasDeRealizado, normalizarSazonalidade,
+  type Alimentacao, type CampoRealizado, type Lacuna, type ProvenienciaCampo, type RealizadoMensal, type StatusCampoRealizado,
+} from './realizado'

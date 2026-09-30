@@ -34,9 +34,11 @@ export function Premissas({ r, set, erros, passo, setPasso }: Props) {
   const statusDe = (path: Path): StatusCampo => {
     const v = getIn(r, path)
     if (!preenchido(v)) return eObrigatorio(path) ? 'vazio' : 'opcional'
+    if (r.alimentacao?.campos[path.join('.')] === v) return 'importado'
     if (!salvo) return 'pendente'
     return getIn(salvo, path) === v ? 'salvo' : 'pendente'
   }
+  const lacunas = r.alimentacao?.lacunas.filter((l) => l.nivel === 'bloqueante') ?? []
   const totalObrig = OBRIGATORIOS.length
   const feitos = OBRIGATORIOS.filter((o) => preenchido(getIn(r, o))).length
   const pendente = (i: number) => CHAVES_PASSO[i].some((k) => erros.some((e) => e.includes(k) || e.includes(ROTULOS[`historico.${k}`] ?? '§') || e.includes(ROTULOS[`abertura.${k}`] ?? '§') || e.includes(ROTULOS[`projecao.${k}`] ?? '§')))
@@ -87,9 +89,17 @@ export function Premissas({ r, set, erros, passo, setPasso }: Props) {
         </div>
         <span className="text-ink-soft">Cada campo é salvo sozinho — pode preencher aos poucos.</span>
         <span className="ml-auto flex items-center gap-3 text-xs">
-          <span className="text-bad">! em aberto</span><span className="text-warn">● não salvo</span><span className="text-ok">✓ salvo</span>
+          <span className="text-bad">! em aberto</span><span className="text-warn">● não salvo</span><span className="text-ok">✓ salvo</span><span className="text-brand-dark">↓ importado</span>
         </span>
       </div>
+
+      {lacunas.length > 0 && (
+        <div className="rounded-lg border border-warn/30 bg-warn-soft px-4 py-2 text-sm">
+          <span className="font-medium text-warn">{lacunas.length} campo(s) sem fonte no realizado</span>
+          <span className="text-ink-soft"> — preencha à mão ou lance no painel Realizado: </span>
+          <span className="text-ink">{lacunas.map((l) => ROTULOS[l.campo] ?? l.campo).join(' · ')}</span>
+        </div>
+      )}
 
       <Card className="p-5">
         <div className="grid gap-4 sm:grid-cols-2">
