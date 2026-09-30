@@ -11,6 +11,7 @@ const firaCode = Fira_Code({ subsets: ['latin'], weight: ['400', '500', '600'], 
 export const metadata: Metadata = {
   title: 'Simulador Financeiro',
   description: 'Projeção de 12 meses: DRE, fluxo de caixa, balanço, indicadores e cenários.',
+  robots: { index: false, follow: false },
 }
 
 export const dynamic = 'force-dynamic'

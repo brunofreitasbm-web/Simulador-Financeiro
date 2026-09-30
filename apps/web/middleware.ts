@@ -20,7 +20,7 @@ export async function middleware(req: NextRequest) {
   const email = data.user?.email?.toLowerCase()
   const ok = !!email && EMAILS.includes(email)
   const p = req.nextUrl.pathname
-  const publica = p === '/login' || p.startsWith('/auth/')
+  const publica = p === '/login' || p.startsWith('/auth/') || p === '/robots.txt'
   if (!ok && !publica) {
     if (p.startsWith('/api/')) return NextResponse.json({ erro: 'não autenticado' }, { status: 401 })
     const url = req.nextUrl.clone()
