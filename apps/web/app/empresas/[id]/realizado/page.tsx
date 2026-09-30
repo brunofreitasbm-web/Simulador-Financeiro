@@ -8,7 +8,7 @@ import { criarCliente } from '@/lib/supabase/server'
 import { listarEmpresas, listarFontes, listarRealizado, listarSincronizacoes, obterEmpresa } from '@/lib/db/repo'
 import { Destaques } from '@/components/realizado/Destaques'
 import { ultimosResumos } from '@/lib/realizadoResumo'
-import { SeletorEmpresa } from '@/components/realizado/SeletorEmpresa'
+import { MenuEmpresas } from '@/components/realizado/MenuEmpresas'
 import { competenciaAtual } from '@/lib/realizadoCatalogo'
 
 export const dynamic = 'force-dynamic'
@@ -27,10 +27,11 @@ export default async function RealizadoPage({ params, searchParams }: { params: 
   const { atual, anterior } = ultimosResumos(meses)
   const sincronizados = meses.filter((m) => m.status !== 'vazio').length
   return (
-    <div className="space-y-3">
+    <div className="grid gap-4 lg:grid-cols-[16rem_minmax(0,1fr)]">
+      <MenuEmpresas atual={id} meses={nMeses} empresas={empresas.map((e) => ({ id: e.id, nome: e.razaoSocial }))} />
+      <div className="min-w-0 space-y-3">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <Link href="/empresas" className="text-sm text-ink-soft hover:text-ink">← Início</Link>
-        <SeletorEmpresa atual={id} meses={nMeses} empresas={empresas.map((e) => ({ id: e.id, nome: e.razaoSocial }))} />
+        <h1 className="text-lg font-semibold">{empresa.razaoSocial}</h1>
         {!ultima ? <Badge tone="neutral">nunca sincronizado</Badge>
           : ultima.status === 'ok' ? <Badge tone="ok">sincronizado · {new Date(ultima.iniciadoEm).toLocaleString('pt-BR')}</Badge>
           : ultima.status === 'executando' ? <Badge tone="info">sincronizando…</Badge>
@@ -46,6 +47,7 @@ export default async function RealizadoPage({ params, searchParams }: { params: 
       <BarraSincronizacao empresaId={id} sincronizacoes={sincronizacoes} temFontes={fontes.some((f) => f.ativo)} />
       <TabelaRealizado empresaId={id} meses={meses} />
       <FontesDados empresaId={id} fontes={fontes} />
+      </div>
     </div>
   )
 }
