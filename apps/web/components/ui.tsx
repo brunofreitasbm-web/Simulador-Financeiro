@@ -41,17 +41,17 @@ interface NumProps {
   placeholder?: string
   className?: string
   disabled?: boolean
-  /** Estado visual do campo: vazio (vermelho), pendente (âmbar), salvo (verde), opcional (neutro). */
-  status?: 'vazio' | 'opcional' | 'pendente' | 'salvo'
+  /** Estado visual do campo: vazio (vermelho), pendente (âmbar), salvo (verde), importado do realizado (marca), opcional (neutro). */
+  status?: 'vazio' | 'opcional' | 'pendente' | 'salvo' | 'importado'
   onCommit?: () => void
 }
 /** Campo numérico com vírgula decimal. Vazio → undefined (o motor acusa o que é obrigatório). */
 const COR_STATUS = {
-  vazio: 'border-bad bg-bad-soft/50', pendente: 'border-warn bg-warn-soft/60', salvo: 'border-ok bg-ok-soft/50', opcional: 'border-line bg-white',
+  vazio: 'border-bad bg-bad-soft/50', pendente: 'border-warn bg-warn-soft/60', salvo: 'border-ok bg-ok-soft/50', importado: 'border-brand bg-brand-soft/60', opcional: 'border-line bg-white',
 } as const
-const ROTULO_STATUS = { vazio: 'Campo obrigatório em aberto', pendente: 'Alteração ainda não salva', salvo: 'Preenchido e salvo', opcional: '' } as const
-const ICONE_STATUS = { vazio: '!', pendente: '●', salvo: '✓', opcional: '' } as const
-const TOM_ICONE = { vazio: 'text-bad', pendente: 'text-warn', salvo: 'text-ok', opcional: '' } as const
+const ROTULO_STATUS = { vazio: 'Campo obrigatório em aberto', pendente: 'Alteração ainda não salva', salvo: 'Preenchido e salvo', importado: 'Preenchido a partir do realizado', opcional: '' } as const
+const ICONE_STATUS = { vazio: '!', pendente: '●', salvo: '✓', importado: '↓', opcional: '' } as const
+const TOM_ICONE = { vazio: 'text-bad', pendente: 'text-warn', salvo: 'text-ok', importado: 'text-brand-dark', opcional: '' } as const
 
 export function NumInput({ value, onChange, prefix, suffix, placeholder, className = '', disabled, status, onCommit }: NumProps) {
   const [txt, setTxt] = useState(fmtNum(value))

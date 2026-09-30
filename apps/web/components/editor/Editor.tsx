@@ -12,6 +12,7 @@ import { PainelIndicadores } from '../Indicadores'
 import { Tabela } from '../Tabela'
 import { Badge, Button, Card, Select, TextInput } from '../ui'
 import { Alertas } from '../Alertas'
+import { AlimentarRealizado } from './AlimentarRealizado'
 import { Cenarios } from './Cenarios'
 import { ConclusaoIA } from './ConclusaoIA'
 import { CampoContext, type EstadoSalvo } from './CampoContext'
@@ -45,6 +46,7 @@ export function Editor({ id, empresaId, inicial }: { id: string; empresaId: stri
   const [analise, setAnalise] = useState<Analise>('nenhuma')
   const [estado, setEstado] = useState<EstadoSalvo>('salvo')
   const [salvoSnap, setSalvoSnap] = useState<Rascunho>(inicial)
+  const [alimentar, setAlimentar] = useState(false)
 
   const set: SetFn = useCallback((path, valor) => setR((x) => setIn(x, path, valor)), [])
 
@@ -103,10 +105,13 @@ export function Editor({ id, empresaId, inicial }: { id: string; empresaId: stri
           </div>
         </div>
         <div className="flex gap-2">
+          <Button variant="soft" onClick={() => { setAlimentar((x) => !x); setAba('premissas') }} aria-expanded={alimentar}>Alimentar com realizado</Button>
           <Button variant="ghost" onClick={() => { if (confirm('Substituir os dados atuais por um exemplo de comércio varejista?')) setR((x) => preencherExemplo(x)) }}>Carregar exemplo</Button>
           <a href={`/relatorio/${id}`} target="_blank" rel="noreferrer"><Button variant="soft">Relatório / PDF</Button></a>
         </div>
       </div>
+
+      {alimentar && <AlimentarRealizado empresaId={empresaId} r={r} setR={setR} fechar={() => setAlimentar(false)} />}
 
       <FaixaResumo sim={atual} />
 
