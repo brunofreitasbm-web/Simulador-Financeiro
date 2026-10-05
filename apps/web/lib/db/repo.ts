@@ -3,7 +3,7 @@ import type { Cliente } from '../supabase/server'
 import { calcular, paraEntradaSeguro } from '../motor'
 import type { AlimentacaoRegistro, CenarioForm, ContingenciaForm, DividaForm, EventoForm, Rascunho } from '../rascunho'
 import { rascunhoVazio } from '../rascunho'
-import type { FonteInput } from '../realizadoSchema'
+import type { FonteInput, ModeloCustosInput } from '../realizadoSchema'
 
 /** Acesso a dados via Supabase (PostgREST). O RLS do banco restringe tudo aos e-mails autorizados. */
 type Row = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -293,4 +293,40 @@ export async function listarSimulacoes(sb: Cliente, empresaId: string): Promise<
     }
     return { id: s.id, nome: s.nome, dataBase: String(s.data_base).slice(0, 10), updatedAt: s.updated_at, caixaFinal, alertaCritico, erro }
   }))
+}
+
+// ---------------------------------------------------------------------------------------------
+// Modelo de custos (estimativas do Realizado) — uma linha por empresa; null = "não estimar"
+// ---------------------------------------------------------------------------------------------
+export interface ModeloCustos {
+  empresaId: string
+  taxaDebito: number; taxaCredito: number; taxaPix: number; taxaVoucher: number
+  aliquotaImpostos: number | null; pctEncargos: number | null
+  aluguelMinimo: number | null; aluguelPctReceita: number | null; condominio: number | null; fundoPromocao: number | null
+  manutencao: number | null; marketing: number | null; fixosOutros: number | null
+}
+const COLUNAS_MODELO: Record<Exclude<keyof ModeloCustos, 'empresaId'>, string> = {
+  taxaDebito: 'taxa_debito', taxaCredito: 'taxa_credito', taxaPix: 'taxa_pix', taxaVoucher: 'taxa_voucher',
+  aliquotaImpostos: 'aliquota_impostos', pctEncargos: 'pct_encargos',
+  aluguelMinimo: 'aluguel_minimo', aluguelPctReceita: 'aluguel_pct_receita', condominio: 'condominio', fundoPromocao: 'fundo_promocao',
+  manutencao: 'manutencao', marketing: 'marketing', fixosOutros: 'fixos_outros',
+}
+const n = (v: unknown) => (v === null || v === undefined ? null : Number(v))
+const mapModelo = (r: Row): ModeloCustos => ({
+  empresaId: r.empresa_id,
+  taxaDebito: Number(r.taxa_debito), taxaCredito: Number(r.taxa_credito), taxaPix: Number(r.taxa_pix), taxaVoucher: Number(r.taxa_voucher),
+  aliquotaImpostos: n(r.aliquota_impostos), pctEncargos: n(r.pct_encargos),
+  aluguelMinimo: n(r.aluguel_minimo), aluguelPctReceita: n(r.aluguel_pct_receita), condominio: n(r.condominio), fundoPromocao: n(r.fundo_promocao),
+  manutencao: n(r.manutencao), marketing: n(r.marketing), fixosOutros: n(r.fixos_outros),
+})
+
+export async function obterModeloCustos(sb: Cliente, empresaId: string): Promise<ModeloCustos | null> {
+  const r = ok(await sb.from('sim_modelo_custos').select('*').eq('empresa_id', empresaId).maybeSingle()) as Row | null
+  return r ? mapModelo(r) : null
+}
+
+export async function salvarModeloCustos(sb: Cliente, empresaId: string, m: ModeloCustosInput): Promise<ModeloCustos> {
+  const linha: Row = { empresa_id: empresaId, updated_at: new Date().toISOString() }
+  for (const [k, col] of Object.entries(COLUNAS_MODELO)) linha[col] = m[k as keyof ModeloCustosInput] ?? null
+  return mapModelo(ok(await sb.from('sim_modelo_custos').upsert(linha, { onConflict: 'empresa_id' }).select('*').single()) as Row)
 }

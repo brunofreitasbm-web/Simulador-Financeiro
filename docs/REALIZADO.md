@@ -20,12 +20,13 @@ Cacau Show (HubOperacoes) ficou fora. As fontes de cada empresa são editáveis 
 ## Como funciona
 
 - **Tabelas** (projeto `ivjvpdzsfjdpyabbzzuj`): `sim_fonte_dados`, `sim_realizado_mensal`, `sim_sincronizacao`.
-- **Escuta automática:** o job `sim-sincronizar-mensal` roda todo dia às 03:15 de Belém e a função `sim_cron_sincronizar()` só dispara no **4º último dia do mês** (dia 27 em mês de 30 dias, 28 em mês de 31, 25 ou 26 em fevereiro). Cada execução sincroniza o mês anterior e o corrente.
+- **Escuta automática:** o job `sim-sincronizar-mensal` roda **todo dia às 03:15 de Belém**. Cada execução sincroniza o mês corrente (prévia sempre atualizada) e o mês anterior enquanto ele não estiver fechado. **A partir do dia 2**, o mês anterior é **fechado automaticamente** quando a sincronização dele deu certo e há receita e folha; sem folha ou sem receita ele continua aberto e o motivo fica no histórico (`nao_fechados`). Mês fechado não é tocado (reabra no painel para corrigir). O dia 2 (e não o penúltimo dia) é de propósito: o dia de negócio do PDV vira às 04h e o fim do mês chega depois da última sincronização.
+- **Falha visível:** se a chave `sim_ops_key` faltar no Vault ou o disparo falhar, `sim_cron_sincronizar()` grava uma linha `erro` em `sim_sincronizacao` (antes devolvia `skip` e o pg_cron marcava "succeeded"), e a tela Realizado mostra um alerta quando não há sincronização bem-sucedida nas últimas 36 h.
 - **Sincronização manual:** botão "Sincronizar agora" na tela Realizado, para qualquer mês.
 - **PDV:** função SQL `sim_extrair_pdv(unit_id, competencia)`, separando as unidades por `unit_id`.
-- **Clínica e RH:** vivem em outro projeto Supabase. A Edge Function `sim-sincronizar` lê o projeto B com a service-role dele e grava tudo pela RPC `sim_gravar_realizado`.
+- **Clínica e RH:** vivem em outro projeto Supabase (B). A Edge Function chama as RPCs `sim_extrair_clinica` e `sim_extrair_rh` de lá (`supabase/projeto-b/migrations/`), que devolvem **só totais do mês**, protegidas pela chave `sim_hub_key` do Vault dos dois projetos. Não há service-role do projeto B no Simulador, e nenhum dado de paciente ou de funcionário sai de lá. Tudo é gravado pela RPC `sim_gravar_realizado`.
 - **Mesclagem:** célula `manual` não é sobrescrita; mês `fechado` não é tocado; nos dois casos só `sobrescrever` força.
-- **Status por campo:** `ok` · `sem_fonte` (o sistema não tem o dado) · `sem_dados` (a fonte tem, mas o mês veio vazio) · `parcial` (estimativa, foto na sincronização ou mês em andamento) · `manual`.
+- **Status por campo:** `ok` · `sem_fonte` (o sistema não tem o dado) · `sem_dados` (a fonte tem, mas o mês veio vazio) · `parcial` (foto na sincronização, proxy ou mês em andamento) · `manual` · `estimado` (calculado por regra/modelo de custos; nunca sobrescreve `ok`, `parcial` nem `manual`).
 
 ## O que cada fonte entrega
 
@@ -39,13 +40,32 @@ Cacau Show (HubOperacoes) ficou fora. As fontes de cada empresa são editáveis 
 | Aluguel, manutenção, marketing, outros fixos | | ok (contas a pagar pagas) | |
 | Compras | parcial (entradas de estoque × custo) | parcial (contas de fornecedores) | |
 | Impostos sobre vendas | | parcial (todos os tributos pagos) | |
-| Folha | parcial (fechamento de folha do PDV) | parcial (conta a pagar "folha") | ok (documento do contador) ou parcial (salários-base) |
-| Encargos, temporários | | | ok / sem_dados |
+| Folha | parcial (fechamento de folha do PDV) | parcial (conta a pagar "folha") | ok (documento do contador) ou estimado (salário-base dos CLT ativos) |
+| Encargos | | | ok (documento do contador) ou estimado (folha × % do modelo) |
+| Temporários / freelas | | | freelances pagos no mês (ok) + bolsas dos estagiários ativos (estimado) |
 | Estoque, créditos pré-pagos | parcial, só no mês corrente | | |
 | Quebra de caixa | ok | | |
+| Taxas de cartão (MDR) | estimado (modelo de custos × débito/crédito) | sem fonte | |
+| Impostos sobre vendas, aluguel, manutenção, marketing, outros fixos | estimado (modelo de custos) | ok/parcial (contas a pagar) | |
 | **Pró-labore, distribuição de lucros, IR/CSLL, frete, comissões, caixa e bancos** | sem fonte | sem fonte | sem fonte |
 
 Nenhum sistema tem saldo bancário, pró-labore, distribuição de lucros ou IR/CSLL. Esses campos ficam `sem_fonte` e precisam ser digitados no painel.
+
+## Estimativas (modelo de custos)
+
+O que nenhum sistema registra é calculado depois das fontes, a partir de `sim_modelo_custos` (painel "Modelo de custos" na tela Realizado, uma linha por empresa). Só entra em campo `sem_fonte`/`sem_dados`/`estimado`; dado real e célula digitada sempre vencem, e cada célula guarda a fórmula usada na observação.
+
+| Campo | Regra |
+|---|---|
+| Taxas de cartão | débito × taxa + crédito × taxa + Pix × taxa + voucher × taxa (padrão 1,0% / 3,0% / 0% / 0%). Só quando o mês tem débito/crédito conhecidos |
+| Impostos sobre vendas | receita bruta × alíquota efetiva (padrão 6%, Simples Anexo III 1ª faixa; Playground e Circuito dividem o CNPJ, então a alíquota real vem da receita **somada** dos 12 meses) |
+| Encargos | folha × % (padrão 28%: FGTS + provisões de 13º e férias; no Simples a parte patronal está no DAS) |
+| Aluguel | maior entre o mínimo e o % do faturamento + condomínio + fundo de promoção |
+| Manutenção, marketing, outros fixos | valor fixo mensal |
+
+Valores do modelo em branco significam "não estimar". Salários-base e bolsas são a foto de hoje: só entram no mês corrente e no anterior, nunca em meses antigos.
+
+No editor, "Alimentar com realizado" deriva a taxa média do cartão como Σ taxas ÷ Σ (crédito + voucher): o motor aplica a taxa só à base "cartão" (crédito + voucher; débito entra em "à vista"), então o MDR do débito fica diluído nessa taxa e o custo total bate. A UI avisa que é estimativa.
 
 ## Alimentar uma simulação
 
@@ -60,21 +80,21 @@ Um campo só é preenchido quando **todos** os meses da janela têm dado; senão
 
 ## Operação
 
-Configurado em 2026-09-30:
+Em produção desde 2026-10-05 (projeto A `ivjvpdzsfjdpyabbzzuj`, projeto B `vththexblpxwocbowhsv`):
 
-- migrations `20260901000000_sim_baseline` (retrato do schema que já existia), `20261005000000_sim_realizado` e `20261005000100_sim_seed_empresas`;
-- Edge Function `sim-sincronizar` publicada com `verify_jwt=false` (autentica por `x-ops-key` ou por JWT de usuário autorizado);
-- job pg_cron `sim-sincronizar-mensal` ativo.
+- migrations `20261005*` e `20261006000000_sim_escuta_automatica` (projeto A) e `supabase/projeto-b/migrations/20261006000100_sim_extracao` (projeto B);
+- Edge Function `sim-sincronizar` v7 (`verify_jwt=false`; autentica por `x-ops-key` validada contra o Vault ou por JWT de usuário autorizado);
+- segredos no Vault de A: `sim_ops_key`, `sim_hub_key`, `sim_b_url`, `sim_b_anon`; no Vault de B: `sim_hub_key` (mesmo valor). Nenhum secret de função precisa ser copiado à mão;
+- job pg_cron `sim-sincronizar-mensal` ativo (diário, 03:15 Belém).
 
-**Falta fazer (manual, exige chaves):**
+Para girar a chave do hub: crie um novo `sim_hub_key` nos dois Vaults com o mesmo valor (`vault.update_secret`). Para testar: `select public.sim_cron_sincronizar();` e conferir `sim_sincronizacao`.
 
-1. Gerar uma chave: `openssl rand -hex 32`.
-2. No projeto A: `select vault.create_secret('<chave>', 'sim_ops_key', 'x-ops-key do sim-sincronizar');`
-3. Nos secrets da função: `supabase secrets set SIM_OPS_KEY=<chave> CLINICA_SUPABASE_URL=https://vththexblpxwocbowhsv.supabase.co CLINICA_SUPABASE_SERVICE_ROLE_KEY=<service-role do projeto B> --project-ref ivjvpdzsfjdpyabbzzuj`
-4. Testar: `select public.sim_cron_sincronizar(true);` e conferir `sim_sincronizacao`.
-5. Confirmar no cadastro da Clínica o CNPJ e o regime tributário (o seed usou `simples` e CNPJ vazio nas quatro).
+Pendências de dados (o sistema avisa na própria tela):
 
-Sem os secrets do projeto B, PDV funciona; Clínica e RH registram erro legível no histórico da sincronização.
+1. **Salário-base dos 4 CLT** do Parque Shopping no Gestão de Pessoas (hoje nulos): sem isso `folha` fica vazia e o mês não fecha sozinho. Quando o contador enviar o documento de folha (`unit_payroll_documents`, `meta.competencia`, `meta.tipo_folha`, `meta.valor`), ele passa a valer como `ok`.
+2. **Modelo de custos** de cada empresa: aluguel, condomínio, fundo de promoção, manutenção, marketing e as alíquotas reais (hoje só taxas de cartão e 6%/28% de padrão).
+3. Confirmar no cadastro da Clínica o CNPJ e o regime tributário (o seed usou `simples` e CNPJ vazio nas quatro).
+4. Na Clínica, `paid_method` não é preenchido pelo sistema: dinheiro, débito e crédito ficam `sem_fonte` (só o Pix é inferido).
 
 ## Dados hoje (2026-09-30)
 

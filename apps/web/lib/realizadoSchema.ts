@@ -29,3 +29,14 @@ export const FonteBody = z.discriminatedUnion('tipo', [
 ])
 export const FontesBody = z.array(FonteBody).max(3)
 export type FonteInput = z.infer<typeof FonteBody>
+
+/** PUT /api/empresas/:id/modelo-custos — null/ausente = "não estimar" (as taxas de cartão são obrigatórias, 0 = sem taxa). */
+const pct = (max: number) => z.number().finite().min(0).max(max)
+const valor = z.number().finite().min(0).max(1e9).nullable()
+export const ModeloCustosBody = z.object({
+  taxaDebito: pct(15), taxaCredito: pct(15), taxaPix: pct(15), taxaVoucher: pct(15),
+  aliquotaImpostos: pct(40).nullable(), pctEncargos: pct(120).nullable(),
+  aluguelMinimo: valor, aluguelPctReceita: pct(40).nullable(), condominio: valor, fundoPromocao: valor,
+  manutencao: valor, marketing: valor, fixosOutros: valor,
+})
+export type ModeloCustosInput = z.infer<typeof ModeloCustosBody>
