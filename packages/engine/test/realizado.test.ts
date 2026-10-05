@@ -14,7 +14,7 @@ function mesCheio(competencia: string, over: Partial<Record<CampoRealizado, numb
     receitaBruta: 100_000, receitaServicos: 90_000, receitaProdutos: 10_000, descontos: 2_000, cancelamentos: 500, qtdPedidos: 800,
     receitaDinheiro: 10_000, receitaPix: 20_000, receitaDebito: 10_000, receitaCredito: 30_000, receitaVoucher: 0, receitaPrazo: 30_000,
     inadimplencia: 600, glosas: 0,
-    compras: 40_000, frete: 2_000, comissoes: 3_000, impostosVendas: 5_880, irCsll: 0,
+    compras: 40_000, frete: 2_000, comissoes: 3_000, impostosVendas: 5_880, taxasCartao: 1_200, irCsll: 0,
     folha: 18_000, encargos: 2_000, temporarios: 1_000, proLabore: 6_000, repassesTerapeutas: 0,
     aluguel: 5_000, manutencao: 1_000, fixosOutros: 4_000, marketing: 3_000, distribuicao: 10_000,
     caixaFinal: 80_000, contasReceber: 25_000, contasPagar: 12_000, estoque: 40_000, passivoPrepago: 3_000, quebraCaixa: 20,
@@ -52,6 +52,21 @@ describe('Realizado → premissas', () => {
     // o que saiu valida no schema do motor (com prazos digitados à parte)
     const parse = HistoricoSchema.safeParse({ ...a.historico, prazoRecebDias: 30, prazoPagFornecDias: 30 })
     expect(parse.success, JSON.stringify(parse.error?.issues)).toBe(true)
+  })
+  it('taxa de cartão = Σ taxas ÷ Σ (crédito + voucher), limitada a 15%, com aviso de estimativa', () => {
+    const a = montarPremissasDeRealizado(doze(), '2026-09-30')
+    perto(a.historico.taxaCartao, 4) // 1.200 ÷ 30.000
+    expect(a.lacunas.some((l) => l.campo === 'historico.taxaCartao' && l.nivel === 'aviso' && /estimada/.test(l.motivo))).toBe(true)
+    const alta = montarPremissasDeRealizado(janela.map((c) => mesCheio(c, { taxasCartao: 9_000 })), '2026-09-30')
+    expect(alta.historico.taxaCartao).toBe(15)
+    expect(HistoricoSchema.shape.taxaCartao.safeParse(alta.historico.taxaCartao).success).toBe(true)
+  })
+  it('sem taxas de cartão num mês: taxa não é alimentada e vira só aviso (nunca bloqueia)', () => {
+    const meses = doze(); meses[3] = mesCheio(meses[3].competencia, { taxasCartao: null })
+    const a = montarPremissasDeRealizado(meses, '2026-09-30')
+    expect(a.historico.taxaCartao).toBeUndefined()
+    expect(a.lacunas.find((l) => l.campo === 'historico.taxaCartao')?.nivel).toBe('aviso')
+    expect(a.lacunas.filter((l) => l.nivel === 'bloqueante')).toEqual([])
   })
   it('mês faltando: lacuna bloqueante e campo ausente', () => {
     const meses = doze().filter((m) => m.competencia !== '2026-03')

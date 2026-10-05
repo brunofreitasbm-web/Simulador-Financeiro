@@ -12,7 +12,7 @@ import type { Abertura, Historico, Projecao } from './schema'
 export const CAMPOS_REALIZADO = [
   'receitaBruta', 'receitaServicos', 'receitaProdutos', 'descontos', 'cancelamentos', 'qtdPedidos',
   'receitaDinheiro', 'receitaPix', 'receitaDebito', 'receitaCredito', 'receitaVoucher', 'receitaPrazo', 'inadimplencia', 'glosas',
-  'compras', 'frete', 'comissoes', 'impostosVendas', 'irCsll',
+  'compras', 'frete', 'comissoes', 'impostosVendas', 'taxasCartao', 'irCsll',
   'folha', 'encargos', 'temporarios', 'proLabore', 'repassesTerapeutas',
   'aluguel', 'manutencao', 'fixosOutros', 'marketing', 'distribuicao',
   'caixaFinal', 'contasReceber', 'contasPagar', 'estoque', 'passivoPrepago', 'quebraCaixa',
@@ -24,7 +24,8 @@ export const COLUNA_REALIZADO: Record<CampoRealizado, string> = Object.fromEntri
   CAMPOS_REALIZADO.map((c) => [c, c.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`)]),
 ) as Record<CampoRealizado, string>
 
-export type StatusCampoRealizado = 'ok' | 'sem_fonte' | 'sem_dados' | 'parcial' | 'manual'
+/** estimado = calculado por regra/modelo de custos (não vem de um sistema nem foi digitado). */
+export type StatusCampoRealizado = 'ok' | 'sem_fonte' | 'sem_dados' | 'parcial' | 'manual' | 'estimado'
 
 export interface ProvenienciaCampo {
   fonte: string
@@ -146,6 +147,22 @@ export function montarPremissasDeRealizado(meses: RealizadoMensal[], dataBase: s
   total12('frete12', 'frete')
   total12('impVendas12', 'impostosVendas')
   total12('irCsll12', 'irCsll')
+
+  // taxa média do cartão = Σ taxas de cartão ÷ Σ (crédito + voucher). O motor aplica a taxa só sobre a base "cartão"
+  // (crédito + voucher; o débito entra em "à vista"), então o MDR do débito fica diluído nesta taxa e o custo total bate.
+  {
+    const partes: CampoRealizado[] = ['taxasCartao', 'receitaCredito', 'receitaVoucher']
+    const somas = partes.map((p) => somar(mapa, janela, p))
+    const faltas = partes.filter((_, i) => somas[i].faltando.length)
+    const base = somas[1].total + somas[2].total
+    if (faltas.length) aviso('historico.taxaCartao', `${faltas.join(', ')} ${motivoFalta(somas[partes.indexOf(faltas[0])].faltando)}; taxa de cartão mantida`)
+    else if (base <= 0) aviso('historico.taxaCartao', 'sem vendas no crédito na janela; taxa de cartão mantida')
+    else {
+      const taxa = r2((somas[0].total / base) * 100)
+      historico.taxaCartao = Math.min(taxa, 15)
+      aviso('historico.taxaCartao', `estimada pelo modelo de custos (não pelo extrato da adquirente)${taxa > 15 ? `; limitada a 15% (calculado ${taxa}%)` : ''}; inclui o MDR do débito`)
+    }
+  }
 
   // fixos12 = aluguel + manutenção + outros (cada parcela precisa existir)
   {

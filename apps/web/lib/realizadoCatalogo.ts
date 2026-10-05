@@ -24,6 +24,7 @@ export const CATALOGO_REALIZADO: ItemCatalogo[] = [
   { chave: 'frete', rotulo: 'Frete / logística', grupo: 'Custos variáveis', unidade: 'R$' },
   { chave: 'comissoes', rotulo: 'Comissões', grupo: 'Custos variáveis', unidade: 'R$' },
   { chave: 'impostosVendas', rotulo: 'Impostos sobre vendas', grupo: 'Custos variáveis', unidade: 'R$' },
+  { chave: 'taxasCartao', rotulo: 'Taxas de cartão (MDR)', grupo: 'Custos variáveis', unidade: 'R$', ajuda: 'Nenhum sistema registra a taxa da maquininha: é estimada pelas taxas do modelo de custos. Digite o valor do extrato da adquirente para fixar.' },
   { chave: 'irCsll', rotulo: 'IR / CSLL', grupo: 'Custos variáveis', unidade: 'R$' },
   { chave: 'folha', rotulo: 'Folha', grupo: 'Pessoal', unidade: 'R$' },
   { chave: 'encargos', rotulo: 'Encargos', grupo: 'Pessoal', unidade: 'R$' },
@@ -46,10 +47,10 @@ export const CATALOGO_REALIZADO: ItemCatalogo[] = [
 export const GRUPOS_REALIZADO: GrupoRealizado[] = ['Receita', 'Mix de pagamento', 'Custos variáveis', 'Pessoal', 'Fixos', 'Posições no fim do mês']
 
 export const ROTULO_STATUS_CAMPO: Record<StatusCampoRealizado, string> = {
-  ok: 'sincronizado', sem_fonte: 'sem fonte', sem_dados: 'sem dados', parcial: 'parcial', manual: 'manual',
+  ok: 'sincronizado', sem_fonte: 'sem fonte', sem_dados: 'sem dados', parcial: 'parcial', manual: 'manual', estimado: 'estimado',
 }
 
-export const ROTULO_FONTE: Record<string, string> = { pdv: 'PDV FaçaAmigos', clinica: 'Sistema da Clínica', rh: 'Gestão de Pessoas (RH)', manual: 'Digitado' }
+export const ROTULO_FONTE: Record<string, string> = { pdv: 'PDV FaçaAmigos', clinica: 'Sistema da Clínica', rh: 'Gestão de Pessoas (RH)', manual: 'Digitado', modelo: 'Modelo de custos' }
 
 const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
 /** '2026-09' → 'set/2026' */
