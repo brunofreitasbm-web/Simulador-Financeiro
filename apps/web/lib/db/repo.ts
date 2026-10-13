@@ -191,7 +191,8 @@ export async function salvarRascunho(sb: Cliente, id: string, r: Rascunho) {
 }
 
 // ---------- realizado (alimentação mês a mês) ----------
-export interface FonteDados { id: string; empresaId: string; tipo: 'pdv' | 'clinica' | 'rh'; ativo: boolean; config: Record<string, string>; rotulo: string | null }
+export type TipoFonte = 'pdv' | 'clinica' | 'rh' | 'github'
+export interface FonteDados { id: string; empresaId: string; tipo: TipoFonte; chave: string; ativo: boolean; config: Record<string, string>; rotulo: string | null }
 export interface Sincronizacao {
   id: string; empresaId: string | null; competencias: string[]; origem: 'cron' | 'manual'; disparadoPor: string | null
   status: 'executando' | 'ok' | 'parcial' | 'erro'; resultado: Record<string, unknown>; erro: string | null; iniciadoEm: string; concluidoEm: string | null
@@ -240,25 +241,32 @@ export async function fecharRealizado(sb: Cliente, empresaId: string, competenci
   return mapRealizado(row as Row)
 }
 
-const mapFonte = (f: Row): FonteDados => ({ id: f.id, empresaId: f.empresa_id, tipo: f.tipo, ativo: f.ativo, config: f.config ?? {}, rotulo: f.rotulo ?? null })
+const mapFonte = (f: Row): FonteDados => ({ id: f.id, empresaId: f.empresa_id, tipo: f.tipo, chave: f.chave ?? '', ativo: f.ativo, config: f.config ?? {}, rotulo: f.rotulo ?? null })
 
 export async function listarFontes(sb: Cliente, empresaId: string): Promise<FonteDados[]> {
   const rows = ok(await sb.from('sim_fonte_dados').select('*').eq('empresa_id', empresaId).order('tipo')) as Row[]
   return rows.map(mapFonte)
 }
 
-/** Substitui o conjunto de fontes da empresa (uma por tipo). */
+/** Identidade da unidade na fonte. Compõe a unicidade (empresa_id, tipo, chave) da tabela. */
+export const chaveDaFonte = (f: FonteInput): string =>
+  f.tipo === 'pdv' || f.tipo === 'rh' ? f.config.unit_id
+    : f.tipo === 'clinica' ? f.config.clinic_id
+      : f.config.repo
+
+/**
+ * Substitui o conjunto de fontes da empresa. Grava as novas antes de remover as que saíram, para
+ * que uma falha no meio do caminho não deixe a empresa sem fonte nenhuma. `github` pode repetir
+ * (um repositório por fonte); os demais tipos, não.
+ */
 export async function salvarFontes(sb: Cliente, empresaId: string, fontes: FonteInput[]): Promise<FonteDados[]> {
-  const tipos = fontes.map((f) => f.tipo)
-  if (fontes.length) {
-    ok(await sb.from('sim_fonte_dados').upsert(
-      fontes.map((f) => ({ empresa_id: empresaId, tipo: f.tipo, ativo: f.ativo, config: f.config, rotulo: f.rotulo ?? null })),
-      { onConflict: 'empresa_id,tipo' },
-    ))
-  }
-  let del = sb.from('sim_fonte_dados').delete().eq('empresa_id', empresaId)
-  if (tipos.length) del = del.not('tipo', 'in', `(${tipos.join(',')})`)
-  ok(await del)
+  const atuais = await listarFontes(sb, empresaId)
+  const novas = fontes.map((f) => ({ empresa_id: empresaId, tipo: f.tipo, chave: chaveDaFonte(f), ativo: f.ativo, config: f.config, rotulo: f.rotulo ?? null }))
+  if (novas.length) ok(await sb.from('sim_fonte_dados').upsert(novas, { onConflict: 'empresa_id,tipo,chave' }))
+
+  const mantidas = new Set(novas.map((n) => `${n.tipo}\u0000${n.chave}`))
+  const remover = atuais.filter((a) => !mantidas.has(`${a.tipo}\u0000${a.chave}`)).map((a) => a.id)
+  if (remover.length) ok(await sb.from('sim_fonte_dados').delete().in('id', remover))
   return listarFontes(sb, empresaId)
 }
 

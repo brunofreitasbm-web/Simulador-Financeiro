@@ -24,6 +24,7 @@ Cacau Show (HubOperacoes) ficou fora. As fontes de cada empresa são editáveis 
 - **Sincronização manual:** botão "Sincronizar agora" na tela Realizado, para qualquer mês.
 - **PDV:** função SQL `sim_extrair_pdv(unit_id, competencia)`, separando as unidades por `unit_id`.
 - **Clínica e RH:** vivem em outro projeto Supabase. A Edge Function `sim-sincronizar` lê o projeto B com a service-role dele e grava tudo pela RPC `sim_gravar_realizado`.
+- **GitHub:** a fonte `github` lê o `fechamento/AAAA-MM.json` que cada repositório-fonte publica no fim do mês (`docs/FECHAMENTO-GITHUB.md`). Grava antes das fontes ao vivo, então preenche o que elas não alcançam e nunca contradiz um número lido direto do sistema.
 - **Mesclagem:** célula `manual` não é sobrescrita; mês `fechado` não é tocado; nos dois casos só `sobrescrever` força.
 - **Status por campo:** `ok` · `sem_fonte` (o sistema não tem o dado) · `sem_dados` (a fonte tem, mas o mês veio vazio) · `parcial` (estimativa, foto na sincronização ou mês em andamento) · `manual`.
 
@@ -47,6 +48,25 @@ Cacau Show (HubOperacoes) ficou fora. As fontes de cada empresa são editáveis 
 
 Nenhum sistema tem saldo bancário, pró-labore, distribuição de lucros ou IR/CSLL. Esses campos ficam `sem_fonte` e precisam ser digitados no painel.
 
+## Fonte GitHub — fechamento publicado pelos repositórios
+
+Ao lado das fontes ao vivo, a empresa pode ter fontes do tipo `github`: o Simulador lê o arquivo
+`fechamento/AAAA-MM.json` que cada sistema versiona no próprio repositório. É uma via a mais, não um
+substituto — e hoje é a **única** que alcança a Clínica e o RH enquanto os secrets do projeto B não
+estiverem configurados.
+
+O contrato completo, as regras de mesclagem, a precedência (github grava antes; o dado vivo ganha) e
+o roteiro de instalação nos três repositórios estão em [`docs/FECHAMENTO-GITHUB.md`](FECHAMENTO-GITHUB.md).
+
+Duas diferenças de comportamento que valem registrar:
+
+- quando o fechamento é do sistema `rh` e a folha foi **estimada** pelos salários-base (status
+  `parcial`), o Simulador não grava a folha — a mesma guarda que a fonte RH ao vivo aplica, para uma
+  estimativa não passar por cima do documento do contador vindo de outra fonte;
+- uma empresa pode ter **mais de uma** fonte github (é assim que o Playground recebe o PDV de
+  `faca_amigos` e a folha de `controle-de-estagiario`), por isso a unicidade de `sim_fonte_dados`
+  passou a ser `(empresa_id, tipo, chave)`.
+
 ## Alimentar uma simulação
 
 No editor, o botão **Alimentar com realizado** lê os 12 meses até a data-base e preenche o histórico de 12 meses e a abertura:
@@ -66,6 +86,12 @@ Configurado em 2026-09-30:
 - Edge Function `sim-sincronizar` publicada com `verify_jwt=false` (autentica por `x-ops-key` ou por JWT de usuário autorizado);
 - job pg_cron `sim-sincronizar-mensal` ativo.
 
+Fontes GitHub (aplicar e ligar só o que interessar):
+
+- `20261007000000_sim_fonte_github` — tipo `github` e unicidade `(empresa_id, tipo, chave)`;
+- `20261007000100_sim_seed_fontes_github` — as sete fontes github, **inativas**;
+- redeploy da Edge Function `sim-sincronizar` (o único secret novo é `GITHUB_TOKEN`, e é opcional).
+
 **Falta fazer (manual, exige chaves):**
 
 1. Gerar uma chave: `openssl rand -hex 32`.
@@ -73,8 +99,12 @@ Configurado em 2026-09-30:
 3. Nos secrets da função: `supabase secrets set SIM_OPS_KEY=<chave> CLINICA_SUPABASE_URL=https://vththexblpxwocbowhsv.supabase.co CLINICA_SUPABASE_SERVICE_ROLE_KEY=<service-role do projeto B> --project-ref ivjvpdzsfjdpyabbzzuj`
 4. Testar: `select public.sim_cron_sincronizar(true);` e conferir `sim_sincronizacao`.
 5. Confirmar no cadastro da Clínica o CNPJ e o regime tributário (o seed usou `simples` e CNPJ vazio nas quatro).
+6. Instalar a Action `fechamento.yml` nos três repositórios-fonte e configurar os secrets deles
+   (`integrations/README.md`). Sem isso, a fonte github responde `sem_dados` — sem erro, mas também
+   sem dado.
 
-Sem os secrets do projeto B, PDV funciona; Clínica e RH registram erro legível no histórico da sincronização.
+Sem os secrets do projeto B, PDV funciona; Clínica e RH registram erro legível no histórico da
+sincronização — e nesse caso a fonte github é a via disponível para os dois.
 
 ## Dados hoje (2026-09-30)
 

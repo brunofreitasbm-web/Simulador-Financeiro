@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/brunofreitasbm-web/Simulador-Financeiro/integrations/fechamento.schema.json",
+  "title": "Fechamento mensal (sf.fechamento/1)",
+  "description": "Artefato que cada repositório-fonte publica em fechamento/AAAA-MM.json no fim do mês. O Simulador Financeiro lê este arquivo e o grava em sim_realizado_mensal. Um repositório declara o universo inteiro de colunas (para auditoria); o leitor ignora as declarações 'sem_fonte'.",
+  "type": "object",
+  "required": ["schema", "competencia", "sistema", "unidades"],
+  "additionalProperties": true,
+  "properties": {
+    "schema": { "const": "sf.fechamento/1" },
+    "competencia": { "type": "string", "pattern": "^\\d{4}-(0[1-9]|1[0-2])$", "description": "Mês fechado, 'YYYY-MM'." },
+    "gerado_em": { "type": "string", "format": "date-time" },
+    "sistema": {
+      "enum": ["pdv", "clinica", "rh"],
+      "description": "Qual sistema-fonte produziu o número. Governa a precedência: 'rh' com folha parcial não sobrescreve outra fonte."
+    },
+    "repo": { "type": "string", "description": "'owner/nome' do repositório que publicou." },
+    "parcial": { "type": "boolean", "description": "true quando o mês ainda está em curso e os números vão mudar." },
+    "unidades": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["chave", "valores"],
+        "additionalProperties": true,
+        "properties": {
+          "chave": { "type": "string", "minLength": 1, "description": "Identidade da unidade no sistema-fonte. Casa com sim_fonte_dados.config.unidade (unit_id, clinic_id ou slug)." },
+          "rotulo": { "type": "string" },
+          "valores": {
+            "type": "object",
+            "description": "Colunas de sim_realizado_mensal em snake_case. null = a fonte declara ausência (ver campos[k].status).",
+            "additionalProperties": { "type": ["number", "null"] }
+          },
+          "campos": {
+            "type": "object",
+            "description": "Proveniência por coluna. Sem entrada, um valor numérico vira 'ok' e um null vira 'sem_dados'.",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "status": { "enum": ["ok", "sem_fonte", "sem_dados", "parcial", "manual"] },
+                "obs": { "type": ["string", "null"] }
+              },
+              "additionalProperties": true
+            }
+          },
+          "detalhes": { "type": "object", "description": "Contexto livre para o painel (não entra em cálculo)." }
+        }
+      }
+    }
+  }
+}

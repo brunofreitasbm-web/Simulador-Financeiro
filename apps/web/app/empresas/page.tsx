@@ -12,7 +12,7 @@ export default async function EmpresasPage() {
   const base = await listarEmpresas(sb)
   const empresas: EmpresaLinha[] = await Promise.all(base.map(async (e) => {
     const [nMeses, fontes, sinc, meses] = await Promise.all([contarMesesRealizado(sb, e.id), listarFontes(sb, e.id), listarSincronizacoes(sb, e.id, 1), listarRealizado(sb, e.id, { ate: competenciaAtual(), meses: 3 })])
-    return { ...e, nMeses, resumo: ultimosResumos(meses).atual, fontes: fontes.filter((f) => f.ativo).map((f) => f.tipo), ultima: sinc[0] ? { status: sinc[0].status, em: sinc[0].iniciadoEm } : null }
+    return { ...e, nMeses, resumo: ultimosResumos(meses).atual, fontes: [...new Set(fontes.filter((f) => f.ativo).map((f) => f.tipo))], ultima: sinc[0] ? { status: sinc[0].status, em: sinc[0].iniciadoEm } : null }
   }))
   return <ListaEmpresas empresas={empresas} />
 }

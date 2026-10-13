@@ -49,7 +49,10 @@ export const ROTULO_STATUS_CAMPO: Record<StatusCampoRealizado, string> = {
   ok: 'sincronizado', sem_fonte: 'sem fonte', sem_dados: 'sem dados', parcial: 'parcial', manual: 'manual',
 }
 
-export const ROTULO_FONTE: Record<string, string> = { pdv: 'PDV FaçaAmigos', clinica: 'Sistema da Clínica', rh: 'Gestão de Pessoas (RH)', manual: 'Digitado' }
+export const ROTULO_FONTE: Record<string, string> = {
+  pdv: 'PDV FaçaAmigos', clinica: 'Sistema da Clínica', rh: 'Gestão de Pessoas (RH)',
+  github: 'Fechamento publicado no GitHub', manual: 'Digitado',
+}
 
 const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
 /** '2026-09' → 'set/2026' */

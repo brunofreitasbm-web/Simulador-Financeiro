@@ -12,9 +12,14 @@
 //   - clinica → projeto B (CLINICA_SUPABASE_URL / CLINICA_SUPABASE_SERVICE_ROLE_KEY): billing_items, patient_charges,
 //               contract_invoices, accounts_payable, payouts, insurance_remittance_lines
 //   - rh      → projeto B: unit_payroll_documents, employees, interns, freelance_jobs
+//   - github  → fechamento/AAAA-MM.json publicado no repositório-fonte (ver docs/FECHAMENTO-GITHUB.md).
+//               O contrato de leitura é `packages/engine/src/fechamento.ts`; o leitor aqui é uma cópia
+//               enxuta dele, como as demais extrações já são cópias autocontidas.
+//               Precedência: github grava primeiro, então pdv/clinica/rh sobrescrevem com dado vivo.
 // Tudo é gravado pela RPC sim_gravar_realizado, que respeita células manuais e meses fechados.
 //
 // Secrets: SIM_OPS_KEY, CLINICA_SUPABASE_URL, CLINICA_SUPABASE_SERVICE_ROLE_KEY
+//          GITHUB_TOKEN (opcional: só para repositório privado; os públicos usam raw.githubusercontent.com)
 // (SUPABASE_URL, SUPABASE_ANON_KEY e SUPABASE_SERVICE_ROLE_KEY já vêm injetados). Deploy com verify_jwt=false.
 
 import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
@@ -22,7 +27,7 @@ import { createClient, type SupabaseClient } from "jsr:@supabase/supabase-js@2";
 type Status = "ok" | "sem_fonte" | "sem_dados" | "parcial" | "manual";
 type Campo = { fonte: string; status: Status; obs: string | null; atualizado_em: string };
 type Extracao = { valores: Record<string, number | null>; campos: Record<string, Campo>; detalhes?: Record<string, unknown> };
-type Fonte = { id: string; empresa_id: string; tipo: "pdv" | "clinica" | "rh"; ativo: boolean; config: Record<string, string> };
+type Fonte = { id: string; empresa_id: string; tipo: "pdv" | "clinica" | "rh" | "github"; chave: string; ativo: boolean; config: Record<string, string> };
 
 const TZ = "-03:00"; // America/Belem, sem horário de verão
 const COLUNAS = [
@@ -195,6 +200,99 @@ async function extrairRh(b: SupabaseClient, unitId: string, comp: string): Promi
 }
 
 // ---------------------------------------------------------------------------------------------
+// Fonte: fechamento publicado em repositório GitHub
+//   config: { repo: 'owner/nome', unidade: '<chave no artefato>', branch?: 'main', caminho?: 'fechamento/AAAA-MM.json' }
+//
+// Regras de leitura (espelham packages/engine/src/fechamento.ts):
+//   · o que o artefato não citou permanece intocado no banco;
+//   · 'sem_fonte' é declaração de ausência de fonte, não afirmação sobre o campo → ignorado.
+//     Sem isso, um repositório que publica o universo inteiro zeraria a receita que outro trouxe;
+//   · arquivo ausente (404) não é erro: a fonte existe e o mês ainda não foi publicado.
+// ---------------------------------------------------------------------------------------------
+const SCHEMA_FECHAMENTO = "sf.fechamento/1";
+const STATUS_FECHAMENTO: readonly Status[] = ["ok", "sem_fonte", "sem_dados", "parcial", "manual"];
+
+/** Todas as colunas como `sem_dados` — a fonte existe, o mês não foi publicado. */
+function extracaoVazia(obs: string): Extracao {
+  const valores: Record<string, number | null> = {};
+  const campos: Record<string, Campo> = {};
+  for (const c of COLUNAS) { valores[c] = null; campos[c] = campo("github", "sem_dados", obs); }
+  return { valores, campos };
+}
+
+async function baixarFechamento(repo: string, branch: string, caminho: string): Promise<{ achou: boolean; texto: string }> {
+  const token = Deno.env.get("GITHUB_TOKEN") ?? "";
+  const headers: Record<string, string> = { "User-Agent": "sim-sincronizar" };
+  let url = `https://raw.githubusercontent.com/${repo}/${encodeURIComponent(branch)}/${caminho}`;
+  if (token) {
+    url = `https://api.github.com/repos/${repo}/contents/${caminho}?ref=${encodeURIComponent(branch)}`;
+    headers.Authorization = `Bearer ${token}`;
+    headers.Accept = "application/vnd.github.raw";
+  }
+  const res = await fetch(url, { headers });
+  if (res.status === 404) return { achou: false, texto: "" };
+  const texto = await res.text();
+  if (!res.ok) throw new Error(`GitHub respondeu ${res.status} em ${repo}/${caminho}`);
+  return { achou: true, texto };
+}
+
+type UnidadeFechamento = {
+  chave?: unknown; rotulo?: unknown; detalhes?: Record<string, unknown>;
+  valores?: Record<string, unknown>;
+  campos?: Record<string, { status?: unknown; obs?: unknown }>;
+};
+
+async function extrairGithub(f: Fonte, comp: string): Promise<Extracao> {
+  const repo = f.config.repo, alvo = f.config.unidade, branch = f.config.branch || "main";
+  if (!repo || !alvo) throw new Error("config da fonte github exige 'repo' e 'unidade'");
+  const caminho = f.config.caminho || `fechamento/${comp}.json`;
+
+  const { achou, texto } = await baixarFechamento(repo, branch, caminho);
+  if (!achou) return extracaoVazia(`o repositório ${repo} ainda não publicou ${caminho}`);
+  if (texto.trim() === "") return extracaoVazia(`${repo}/${caminho} está vazio`);
+
+  let bruto: Record<string, unknown>;
+  try { bruto = JSON.parse(texto) as Record<string, unknown>; } catch { throw new Error(`${repo}/${caminho} não é JSON válido`); }
+  if (bruto.schema !== SCHEMA_FECHAMENTO) throw new Error(`${repo}/${caminho}: schema ${JSON.stringify(bruto.schema)} não é '${SCHEMA_FECHAMENTO}'`);
+  if (bruto.competencia !== comp) throw new Error(`${repo}/${caminho}: competência ${JSON.stringify(bruto.competencia)} não é '${comp}'`);
+  const lista = (Array.isArray(bruto.unidades) ? bruto.unidades : []) as UnidadeFechamento[];
+  if (lista.length === 0) throw new Error(`${repo}/${caminho}: sem 'unidades'`);
+
+  const norm = (x: unknown) => String(x ?? "").trim().toLowerCase();
+  const u = lista.find((x) => norm(x.chave) === norm(alvo)) ?? lista.find((x) => norm(x.rotulo) === norm(alvo));
+  if (!u) return extracaoVazia(`${repo}/${caminho} não traz a unidade '${alvo}' (tem: ${lista.map((x) => String(x.chave ?? "?")).join(", ")})`);
+  if (!u.valores || typeof u.valores !== "object") throw new Error(`${repo}/${caminho}: unidade '${alvo}' sem 'valores'`);
+
+  const valores: Record<string, number | null> = {};
+  const campos: Record<string, Campo> = {};
+  for (const c of COLUNAS) {
+    if (!(c in u.valores)) continue; // não citado: outra fonte pode ter trazido
+    const cru = u.valores[c];
+    const v = cru === null ? null : Number(cru);
+    if (v !== null && !Number.isFinite(v)) { console.warn("sim-sincronizar github: valor inválido", repo, caminho, c, cru); continue; }
+    const decl = u.campos?.[c];
+    const status = (decl?.status ?? (v === null ? "sem_dados" : "ok")) as Status;
+    if (!STATUS_FECHAMENTO.includes(status)) throw new Error(`${repo}/${caminho}: status '${String(decl?.status)}' inválido em '${c}'`);
+    if (status === "sem_fonte") continue;
+    valores[c] = v;
+    campos[c] = campo("github", status, typeof decl?.obs === "string" ? decl.obs : `fechamento publicado por ${repo}`);
+  }
+
+  return {
+    valores, campos,
+    detalhes: {
+      ...(u.detalhes ?? {}),
+      fechamento: { repo, caminho, branch, sistema: bruto.sistema ?? null, gerado_em: bruto.gerado_em ?? null, parcial: bruto.parcial === true },
+    },
+  };
+}
+
+/** Um 'parcial' de RH não sobrescreve a folha que outra fonte já trouxe (mesma regra da fonte rh ao vivo). */
+function aplicarGuardaFolha(ext: Extracao, sistema: unknown) {
+  if (sistema === "rh" && ext.campos.folha?.status !== "ok") { delete ext.valores.folha; delete ext.campos.folha; }
+}
+
+// ---------------------------------------------------------------------------------------------
 // Orquestração
 // ---------------------------------------------------------------------------------------------
 Deno.serve(async (req) => {
@@ -243,7 +341,7 @@ Deno.serve(async (req) => {
   }).select("id").single();
   if (logErr || !log) return json({ error: `não consegui abrir o log: ${logErr?.message}` }, 500);
 
-  let q = admin.from("sim_fonte_dados").select("id, empresa_id, tipo, ativo, config, sim_empresa!inner(razao_social, nome_fantasia)").eq("ativo", true);
+  let q = admin.from("sim_fonte_dados").select("id, empresa_id, tipo, chave, ativo, config, sim_empresa!inner(razao_social, nome_fantasia)").eq("ativo", true);
   if (empresaId) q = q.eq("empresa_id", empresaId);
   const { data: fontesRaw, error: fErr } = await q;
   if (fErr) {
@@ -255,22 +353,32 @@ Deno.serve(async (req) => {
   const clinicaUrl = Deno.env.get("CLINICA_SUPABASE_URL"), clinicaKey = Deno.env.get("CLINICA_SUPABASE_SERVICE_ROLE_KEY");
   const projetoB = clinicaUrl && clinicaKey ? createClient(clinicaUrl, clinicaKey, { auth: { persistSession: false, autoRefreshToken: false } }) : null;
 
-  const resultado: Record<string, { nome: string; fontes: Record<string, Record<string, { ok: boolean; campos?: number; erro?: string; ignorado?: string }>> }> = {};
+  const resultado: Record<string, { nome: string; fontes: Record<string, Record<string, { ok: boolean; campos?: number; erro?: string }>> }> = {};
   let erros = 0, gravacoes = 0;
 
-  // ordem por empresa: pdv/clinica antes, rh por último (RH sobrescreve folha quando tem documento)
-  const ordem = { pdv: 0, clinica: 0, rh: 1 } as const;
+  // Ordem por empresa: o fechamento publicado primeiro, depois o dado vivo.
+  // Assim o github preenche o que a fonte ao vivo não alcança, e nunca o contrário.
+  // O RH fica por último porque sobrescreve a folha quando tem o documento do contador.
+  const ordem = { github: 0, pdv: 1, clinica: 1, rh: 2 } as const;
   const porEmpresa = new Map<string, typeof fontes>();
   for (const f of fontes) porEmpresa.set(f.empresa_id, [...(porEmpresa.get(f.empresa_id) ?? []), f]);
 
   for (const [eid, lista] of porEmpresa) {
     lista.sort((a, b) => ordem[a.tipo] - ordem[b.tipo]);
     const nome = lista[0].sim_empresa.nome_fantasia ?? lista[0].sim_empresa.razao_social;
+    // O relatório é indexado por tipo; quando a empresa tem duas fontes do mesmo tipo
+    // (dois repositórios distintos), acrescenta a chave para não perder uma no relatório.
+    const quantos = new Map<string, number>();
+    for (const f of lista) quantos.set(f.tipo, (quantos.get(f.tipo) ?? 0) + 1);
     resultado[eid] = { nome, fontes: {} };
+
     for (const f of lista) {
-      resultado[eid].fontes[f.tipo] = {};
+      const rotuloFonte = (quantos.get(f.tipo) ?? 0) > 1
+        ? `${f.tipo}·${f.chave || f.config.repo || f.id.slice(0, 8)}`
+        : f.tipo;
+      resultado[eid].fontes[rotuloFonte] = {};
       for (const comp of competencias) {
-        const slot = resultado[eid].fontes[f.tipo];
+        const slot = resultado[eid].fontes[rotuloFonte];
         try {
           let ext: Extracao;
           if (f.tipo === "pdv") {
@@ -280,11 +388,14 @@ Deno.serve(async (req) => {
           } else if (f.tipo === "clinica") {
             if (!projetoB) throw new Error("CLINICA_SUPABASE_URL / CLINICA_SUPABASE_SERVICE_ROLE_KEY não configuradas");
             ext = await extrairClinica(projetoB, f.config.clinic_id, comp, comp === corrente);
-          } else {
+          } else if (f.tipo === "rh") {
             if (!projetoB) throw new Error("CLINICA_SUPABASE_URL / CLINICA_SUPABASE_SERVICE_ROLE_KEY não configuradas");
             ext = await extrairRh(projetoB, f.config.unit_id, comp);
             // sem documento de folha, não sobrescreve o que PDV/clínica trouxeram
-            if (ext.campos.folha?.status !== "ok") { delete ext.valores.folha; delete ext.campos.folha; }
+            aplicarGuardaFolha(ext, "rh");
+          } else {
+            ext = await extrairGithub(f, comp);
+            aplicarGuardaFolha(ext, (ext.detalhes?.fechamento as { sistema?: unknown } | undefined)?.sistema);
           }
           // só colunas conhecidas
           for (const k of Object.keys(ext.valores)) if (!(COLUNAS as readonly string[]).includes(k)) { delete ext.valores[k]; delete ext.campos[k]; }

@@ -5,7 +5,8 @@
   "scripts": {
     "test": "pnpm --filter @sf/engine test",
     "typecheck": "pnpm -r typecheck",
-    "dev": "pnpm --filter web dev"
+    "dev": "pnpm --filter web dev",
+    "fechamento:verificar": "node integrations/fechamento/verificar.mjs"
   },
   "devDependencies": {
     "next": "^15.5.26"
