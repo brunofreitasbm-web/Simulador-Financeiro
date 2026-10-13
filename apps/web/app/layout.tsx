@@ -9,8 +9,8 @@ const firaSans = Fira_Sans({ subsets: ['latin'], weight: ['400', '500', '600', '
 const firaCode = Fira_Code({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-fira-code', display: 'swap' })
 
 export const metadata: Metadata = {
-  title: 'Simulador Financeiro',
-  description: 'Projeção de 12 meses: DRE, fluxo de caixa, balanço, indicadores e cenários.',
+  title: 'Saúde Financeira | Espelho Real das Operações',
+  description: 'Gestão da real saúde financeira: Balanço Patrimonial didático em T, DRE em cascata e semáforos de liquidez e margens.',
   robots: { index: false, follow: false },
 }
 
@@ -26,8 +26,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <header className="no-print sticky top-0 z-30 border-b border-line bg-card/95 backdrop-blur">
           <div className="mx-auto flex max-w-[1400px] items-center gap-6 px-4 py-3">
             <Link href="/empresas" className="flex items-center gap-2 font-semibold text-brand-dark">
-              <span className="inline-block h-6 w-6 rounded bg-brand" aria-hidden />
-              Simulador Financeiro
+              <span className="flex h-6 w-6 items-center justify-center rounded bg-brand text-xs font-bold text-white" aria-hidden>
+                SF
+              </span>
+              Saúde Financeira
             </Link>
             <nav className="text-sm text-ink-soft">
               <Link href="/empresas" className="font-medium text-ink hover:text-brand-dark">Início</Link>

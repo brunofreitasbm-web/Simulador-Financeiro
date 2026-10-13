@@ -78,10 +78,17 @@ export function ListaEmpresas({ empresas }: { empresas: EmpresaLinha[] }) {
               <div className="text-xs text-ink-soft">
                 {e.ultima ? `Última sincronização: ${new Date(e.ultima.em).toLocaleString('pt-BR')}` : 'Nunca sincronizada'}
               </div>
-              <div className="mt-auto flex items-center gap-2 pt-1">
-                <Link href={`/empresas/${e.id}/realizado`} className="inline-flex min-h-10 flex-1 items-center justify-center rounded-md bg-brand px-3 py-2 text-sm font-medium text-white hover:bg-brand-dark">Abrir Realizado</Link>
-                <Link href={`/empresas/${e.id}`} className="inline-flex min-h-10 items-center rounded-md border border-line px-3 py-2 text-sm hover:bg-paper">Cadastro</Link>
-                <Button variant="danger" onClick={() => excluir(e)}>Excluir</Button>
+              <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
+                <Link href={`/empresas/${e.id}/saude`} className="inline-flex min-h-9 flex-1 items-center justify-center gap-1 rounded-md bg-brand px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark">
+                  🩺 Saúde Financeira
+                </Link>
+                <Link href={`/empresas/${e.id}/balanco`} className="inline-flex min-h-9 items-center rounded-md border border-line px-2.5 py-1.5 text-xs font-medium hover:bg-paper" title="Balanço em T">
+                  ⚖️ Balanço
+                </Link>
+                <Link href={`/empresas/${e.id}/dre`} className="inline-flex min-h-9 items-center rounded-md border border-line px-2.5 py-1.5 text-xs font-medium hover:bg-paper" title="DRE Waterfall">
+                  📈 DRE
+                </Link>
+                <Button variant="danger" onClick={() => excluir(e)} className="text-xs px-2 py-1">Excluir</Button>
               </div>
             </Card>
           ))}
